@@ -1,6 +1,6 @@
-package com.kirkbushman.lib.managers
+package com.kirkbushman.auth.managers
 
-import com.kirkbushman.lib.models.Token
+import com.kirkbushman.auth.models.Token
 
 /**
  * Interface for persisting auth data on device,

@@ -1,8 +1,8 @@
-package com.kirkbushman.lib.managers
+package com.kirkbushman.auth.managers
 
 import android.content.Context
 import androidx.core.content.edit
-import com.kirkbushman.lib.models.Token
+import com.kirkbushman.auth.models.Token
 
 /**
  * Implementation of StorageManager using SharedPreferences

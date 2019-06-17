@@ -1,7 +1,7 @@
-package com.kirkbushman.lib
+package com.kirkbushman.auth
 
-import com.kirkbushman.lib.http.RedditService
-import com.kirkbushman.lib.managers.RedditAuthManager
+import com.kirkbushman.auth.http.RedditService
+import com.kirkbushman.auth.managers.RedditAuthManager
 import org.junit.Test
 import retrofit2.Retrofit
 import retrofit2.converter.moshi.MoshiConverterFactory

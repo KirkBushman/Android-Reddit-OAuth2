@@ -1,4 +1,4 @@
-package com.kirkbushman.lib.models
+package com.kirkbushman.auth.models
 
 import com.squareup.moshi.Json
 import com.squareup.moshi.JsonClass

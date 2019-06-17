@@ -1,9 +1,9 @@
 package com.kirkbushman.sampleapp
 
 import android.app.Application
-import com.kirkbushman.lib.managers.RedditAuthManager
-import com.kirkbushman.lib.managers.SharedPrefsStorageManager
-import com.kirkbushman.lib.models.TokenBearer
+import com.kirkbushman.auth.managers.RedditAuthManager
+import com.kirkbushman.auth.managers.SharedPrefsStorageManager
+import com.kirkbushman.auth.models.TokenBearer
 import org.xmlpull.v1.XmlPullParser
 
 class TestApplication : Application() {

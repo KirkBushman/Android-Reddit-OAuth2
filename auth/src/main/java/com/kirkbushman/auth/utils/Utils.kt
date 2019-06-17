@@ -1,7 +1,7 @@
-package com.kirkbushman.lib.utils
+package com.kirkbushman.auth.utils
 
 import android.util.Base64
-import com.kirkbushman.lib.models.Scope
+import com.kirkbushman.auth.models.Scope
 
 object Utils {
 

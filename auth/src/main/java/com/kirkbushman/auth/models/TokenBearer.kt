@@ -1,8 +1,8 @@
-package com.kirkbushman.lib.models
+package com.kirkbushman.auth.models
 
-import com.kirkbushman.lib.managers.RedditAuthManager
-import com.kirkbushman.lib.managers.StorageManager
-import com.kirkbushman.lib.utils.toHeaderString
+import com.kirkbushman.auth.managers.RedditAuthManager
+import com.kirkbushman.auth.managers.StorageManager
+import com.kirkbushman.auth.utils.toHeaderString
 
 /**
  * Class that holds and manages the token.

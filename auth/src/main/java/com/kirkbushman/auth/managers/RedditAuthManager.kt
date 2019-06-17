@@ -1,20 +1,20 @@
-package com.kirkbushman.lib.managers
+package com.kirkbushman.auth.managers
 
-import com.kirkbushman.lib.errors.AccessDeniedException
-import com.kirkbushman.lib.errors.InvalidRequestException
-import com.kirkbushman.lib.errors.InvalidScopesException
-import com.kirkbushman.lib.errors.OAuth2Exception
-import com.kirkbushman.lib.errors.UnsupportedResponseTypeException
-import com.kirkbushman.lib.http.RedditService
-import com.kirkbushman.lib.models.BasicInfo
-import com.kirkbushman.lib.models.Scope
-import com.kirkbushman.lib.models.ScopesEnvelope
-import com.kirkbushman.lib.models.Token
-import com.kirkbushman.lib.models.TokenBearer
-import com.kirkbushman.lib.utils.Utils.addParamsToUrl
-import com.kirkbushman.lib.utils.Utils.generateRandomString
-import com.kirkbushman.lib.utils.toHeaderString
-import com.kirkbushman.lib.utils.toSeparatedString
+import com.kirkbushman.auth.errors.AccessDeniedException
+import com.kirkbushman.auth.errors.InvalidRequestException
+import com.kirkbushman.auth.errors.InvalidScopesException
+import com.kirkbushman.auth.errors.OAuth2Exception
+import com.kirkbushman.auth.errors.UnsupportedResponseTypeException
+import com.kirkbushman.auth.http.RedditService
+import com.kirkbushman.auth.models.BasicInfo
+import com.kirkbushman.auth.models.Scope
+import com.kirkbushman.auth.models.ScopesEnvelope
+import com.kirkbushman.auth.models.Token
+import com.kirkbushman.auth.models.TokenBearer
+import com.kirkbushman.auth.utils.Utils.addParamsToUrl
+import com.kirkbushman.auth.utils.Utils.generateRandomString
+import com.kirkbushman.auth.utils.toHeaderString
+import com.kirkbushman.auth.utils.toSeparatedString
 import retrofit2.Retrofit
 import retrofit2.converter.moshi.MoshiConverterFactory
 

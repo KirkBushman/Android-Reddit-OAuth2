@@ -1,8 +1,8 @@
-package com.kirkbushman.lib.http
+package com.kirkbushman.auth.http
 
-import com.kirkbushman.lib.models.RefreshToken
-import com.kirkbushman.lib.models.Token
-import com.kirkbushman.lib.models.ScopesEnvelope
+import com.kirkbushman.auth.models.RefreshToken
+import com.kirkbushman.auth.models.ScopesEnvelope
+import com.kirkbushman.auth.models.Token
 import retrofit2.Call
 import retrofit2.http.GET
 import retrofit2.http.HeaderMap

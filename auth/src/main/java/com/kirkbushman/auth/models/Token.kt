@@ -1,4 +1,4 @@
-package com.kirkbushman.lib.models
+package com.kirkbushman.auth.models
 
 import android.os.Parcelable
 import com.squareup.moshi.Json
