@@ -19,5 +19,5 @@ local.properties
 .DS_Store
 
 .externalNativeBuild
-/lib/src/main/res/xml/credentials.xml
+/auth/src/main/res/xml/credentials.xml
 /sampleapp/src/main/res/xml/credentials.xml

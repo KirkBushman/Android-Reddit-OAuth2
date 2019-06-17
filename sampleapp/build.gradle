@@ -33,7 +33,7 @@ dependencies {
 
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_ver"
 
-    implementation project(":lib")
+    implementation project(':auth')
 
     implementation "com.google.android.material:material:$mdc_ver"
     implementation "androidx.core:core-ktx:$ktx_ver"

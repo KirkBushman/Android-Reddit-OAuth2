@@ -1,0 +1,91 @@
+apply plugin: 'com.android.library'
+apply plugin: 'kotlin-android'
+apply plugin: 'kotlin-android-extensions'
+apply plugin: 'kotlin-kapt'
+
+apply plugin: 'com.github.dcendents.android-maven'
+
+android {
+    compileSdkVersion 28
+    buildToolsVersion = '28.0.3'
+
+    defaultConfig {
+        minSdkVersion 19
+        targetSdkVersion 28
+        versionCode = 1
+        versionName = VERSION_NAME
+    }
+
+    sourceSets {
+        test.java.srcDirs += 'src/test/kotlin'
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+
+    kotlinOptions {
+        jvmTarget = '1.8'
+        noReflect = true
+    }
+}
+
+androidExtensions {
+    experimental = true
+}
+
+dependencies {
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+
+    testImplementation "junit:junit:$junit_ver"
+    testImplementation "com.nhaarman.mockitokotlin2:mockito-kotlin:$mockito_ver"
+    testImplementation "xyz.nulldev.huandroid:huandroid:$htmlunit_ver"
+
+
+    implementation "androidx.core:core-ktx:$ktx_ver"
+
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_ver"
+
+    implementation "com.squareup.retrofit2:retrofit:$retrofit_ver"
+    implementation "com.squareup.retrofit2:converter-moshi:$retrofit_ver"
+
+    implementation "com.squareup.moshi:moshi:$moshi_ver"
+    kapt           "com.squareup.moshi:moshi-kotlin-codegen:$moshi_ver"
+}
+
+install {
+    repositories.mavenInstaller {
+
+        pom.project {
+
+            packaging 'aar'
+            groupId GROUP_ID
+            artifactId ARTIFACT_ID
+            version VERSION_NAME
+
+            name NAME
+            description = DESCRIPTION
+            url REPO_URL
+
+            licenses {
+                license {
+                    name 'MIT License'
+                    url 'http://www.opensource.org/licenses/mit-license.php'
+                }
+            }
+            developers {
+                developer {
+                    id 'KirkBushman'
+                    name 'Luca Pellizzari'
+                    email 'pellizzari954@gmail.com'
+                }
+            }
+            scm {
+                connection GIT_URL
+                developerConnection GIT_URL
+                url REPO_URL
+            }
+        }
+    }
+}

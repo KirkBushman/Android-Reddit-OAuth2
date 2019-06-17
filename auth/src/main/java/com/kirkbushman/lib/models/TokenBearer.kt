@@ -62,6 +62,10 @@ class TokenBearer(
         return "Authorization: bearer ${getRawAccessToken()}"
     }
 
+    fun getAuthHeader(): Map<String, String> {
+        return hashMapOf("Authorization" to "bearer ".plus(getRawAccessToken()))
+    }
+
     fun revokeToken() {
 
         if (isRevoked) {
