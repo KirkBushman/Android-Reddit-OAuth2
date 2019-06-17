@@ -2,6 +2,24 @@
 
 This is a OAuth2 authentication client for the Reddit API built for Android.
 
+
+
+### How to install.
+
+```
+allprojects {
+    repositories {
+        ...
+        maven { url 'https://jitpack.io' }
+    }
+}
+
+dependencies {
+    implementation 'com.github.KirkBushman:Android-Reddit-OAuth2:Tag'
+}
+```
+
+
 ### How to use it.
 
 1) First of all create the manager object that is responsible for the initial interaction with the browser and the retrieval of the token.
