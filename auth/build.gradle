@@ -3,11 +3,9 @@ apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
 apply plugin: 'kotlin-kapt'
 
-apply plugin: 'com.github.dcendents.android-maven'
-
 android {
     compileSdkVersion 29
-    buildToolsVersion = '29.0.0'
+    buildToolsVersion = '29.0.2'
 
     defaultConfig {
         minSdkVersion 19
@@ -52,40 +50,4 @@ dependencies {
 
     implementation "com.squareup.moshi:moshi:$moshi_ver"
     kapt           "com.squareup.moshi:moshi-kotlin-codegen:$moshi_ver"
-}
-
-install {
-    repositories.mavenInstaller {
-
-        pom.project {
-
-            packaging 'aar'
-            groupId GROUP_ID
-            artifactId ARTIFACT_ID
-            version VERSION_NAME
-
-            name NAME
-            description = DESCRIPTION
-            url REPO_URL
-
-            licenses {
-                license {
-                    name 'MIT License'
-                    url 'http://www.opensource.org/licenses/mit-license.php'
-                }
-            }
-            developers {
-                developer {
-                    id 'KirkBushman'
-                    name 'Luca Pellizzari'
-                    email 'pellizzari954@gmail.com'
-                }
-            }
-            scm {
-                connection GIT_URL
-                developerConnection GIT_URL
-                url REPO_URL
-            }
-        }
-    }
 }

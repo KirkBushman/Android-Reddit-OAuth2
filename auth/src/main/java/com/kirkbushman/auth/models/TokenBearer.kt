@@ -129,7 +129,7 @@ class TokenBearer(
             return
         }
 
-        IllegalStateException("Response was unsuccessful while renewing token!")
+        throw IllegalStateException("Response was unsuccessful while renewing token!")
     }
 
     override fun toString(): String {

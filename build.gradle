@@ -3,19 +3,17 @@
 buildscript {
 
     ext {
-        android_gradle_ver  = '3.4.1'
+        android_gradle_ver  = '3.5.0'
 
-        kotlin_ver      = '1.3.41'
-        ktx_ver         = '1.1.0-rc02'
-        mdc_ver         = '1.1.0-alpha07'
-        retrofit_ver    = '2.6.0'
+        kotlin_ver      = '1.3.50'
+        ktx_ver         = '1.1.0-rc03'
+        mdc_ver         = '1.1.0-alpha09'
+        retrofit_ver    = '2.6.1'
         moshi_ver       = '1.8.0'
 
         junit_ver       = '4.12'
         mockito_ver     = '2.1.0'
         htmlunit_ver    = '2.30.01'
-
-        maven_plugin    = '2.1'
     }
 
     repositories {
@@ -26,8 +24,6 @@ buildscript {
     dependencies {
         classpath "com.android.tools.build:gradle:$android_gradle_ver"
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_ver"
-
-        classpath "com.github.dcendents:android-maven-gradle-plugin:$maven_plugin"
     }
 }
 
