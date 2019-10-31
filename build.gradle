@@ -3,16 +3,16 @@
 buildscript {
 
     ext {
-        android_gradle_ver  = '3.5.0'
+        android_gradle_ver  = '3.5.1'
 
         kotlin_ver      = '1.3.50'
-        ktx_ver         = '1.1.0-rc03'
-        mdc_ver         = '1.1.0-alpha09'
-        retrofit_ver    = '2.6.1'
-        moshi_ver       = '1.8.0'
+        ktx_ver         = '1.1.0'
+        mdc_ver         = '1.1.0-beta01'
+        retrofit_ver    = '2.6.2'
+        moshi_ver       = '1.9.1'
 
         junit_ver       = '4.12'
-        mockito_ver     = '2.1.0'
+        mockito_ver     = '2.2.0'
         htmlunit_ver    = '2.30.01'
     }
 
