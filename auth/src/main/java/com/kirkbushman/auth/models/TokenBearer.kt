@@ -1,7 +1,8 @@
 package com.kirkbushman.auth.models
 
-import com.kirkbushman.auth.managers.RedditAuthManager
+import com.kirkbushman.auth.RedditAuth
 import com.kirkbushman.auth.managers.StorageManager
+import com.kirkbushman.auth.models.base.Credentials
 import com.kirkbushman.auth.utils.toHeaderString
 
 /**
@@ -22,8 +23,7 @@ class TokenBearer(
     /**
      * ClientId and Redirect Url
      */
-    private val basicInfo: BasicInfo
-
+    private val credentials: Credentials
 ) {
 
     private var isRevoked = false
@@ -72,8 +72,8 @@ class TokenBearer(
             return
         }
 
-        val req = RedditAuthManager.api.revoke(
-            header = "${basicInfo.clientId}:".toHeaderString(),
+        val req = RedditAuth.api.revoke(
+            header = "${credentials.clientId}:".toHeaderString(),
 
             token = token!!.accessToken,
             tokenTypeHint = "access_token"
@@ -108,10 +108,14 @@ class TokenBearer(
             return
         }
 
-        val req = RedditAuthManager.api.renewToken(
+        if (token?.refreshToken == null) {
+            return
+        }
 
-            header = "${basicInfo.clientId}:".toHeaderString(),
-            refreshToken = token!!.refreshToken
+        val req = RedditAuth.api.renewToken(
+
+            header = "${credentials.clientId}:".toHeaderString(),
+            refreshToken = token!!.refreshToken!!
         )
 
         val res = req.execute()
@@ -130,9 +134,5 @@ class TokenBearer(
         }
 
         throw IllegalStateException("Response was unsuccessful while renewing token!")
-    }
-
-    override fun toString(): String {
-        return "TokenBearer { token: $token, isRevoked: $isRevoked }"
     }
 }

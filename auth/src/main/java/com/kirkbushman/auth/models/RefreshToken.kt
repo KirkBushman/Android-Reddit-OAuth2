@@ -19,9 +19,4 @@ data class RefreshToken(
 
     @Json(name = "scope")
     val scopes: String
-
-) {
-    override fun toString(): String {
-        return "RefreshToken { accessToken: $accessToken, tokenType: $tokenType, expiresInSecs: $expiresInSecs, createdTime: $createdTime, scopes: $scopes }"
-    }
-}
+)

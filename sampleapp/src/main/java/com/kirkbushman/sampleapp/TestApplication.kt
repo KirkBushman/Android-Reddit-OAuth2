@@ -1,8 +1,9 @@
 package com.kirkbushman.sampleapp
 
 import android.app.Application
-import com.kirkbushman.auth.managers.RedditAuthManager
+import com.kirkbushman.auth.RedditAuth
 import com.kirkbushman.auth.managers.SharedPrefsStorageManager
+import com.kirkbushman.auth.models.AuthType
 import com.kirkbushman.auth.models.TokenBearer
 import org.xmlpull.v1.XmlPullParser
 
@@ -12,16 +13,33 @@ class TestApplication : Application() {
         lateinit var instance: TestApplication
     }
 
-    val authClient by lazy {
+    var authClient: RedditAuth? = null
+
+    fun loadClient(authType: AuthType) {
 
         val creds = loadCredsFromFile()
 
-        RedditAuthManager.Builder()
-            .setClientId(creds.clientId)
-            .setRedirectUrl(creds.redirectUrl)
-            .setScopes(creds.scopes.toTypedArray())
-            .setStorageManager(SharedPrefsStorageManager(this))
-            .build()
+        authClient = when (authType) {
+            AuthType.INSTALLED_APP -> {
+
+                RedditAuth.Builder()
+                    .setCredentials(creds.clientId, creds.redirectUrl)
+                    .setScopes(creds.scopes.toTypedArray())
+                    .setStorageManager(SharedPrefsStorageManager(this))
+                    .build()
+            }
+
+            AuthType.SCRIPT -> {
+
+                RedditAuth.Builder()
+                    .setCredentials(creds.clientId, creds.redirectUrl)
+                    .setScopes(creds.scopes.toTypedArray())
+                    .setStorageManager(SharedPrefsStorageManager(this))
+                    .build()
+            }
+
+            else -> null
+        }
     }
 
     private var bearer: TokenBearer? = null
@@ -36,11 +54,17 @@ class TestApplication : Application() {
         instance = this
     }
 
-    private fun loadCredsFromFile(): Credentials {
+    private fun loadCredsFromFile(): TestCredentials {
         val xpp = resources.getXml(R.xml.credentials)
 
         var clientId = ""
         var redirectUrl = ""
+
+        var scriptClientId = ""
+        var scriptClientSecret = ""
+        var username = ""
+        var password = ""
+
         val scopes = ArrayList<String>()
 
         while (xpp.eventType != XmlPullParser.END_DOCUMENT) {
@@ -53,6 +77,10 @@ class TestApplication : Application() {
                         "clientId" -> clientId = xpp.nextText()
                         "redirectUrl" -> redirectUrl = xpp.nextText()
                         "scope" -> scopes.add(xpp.nextText())
+                        "scriptClientId" -> scriptClientId = xpp.nextText()
+                        "scriptClientSecret" -> scriptClientSecret = xpp.nextText()
+                        "username" -> username = xpp.nextText()
+                        "password" -> password = xpp.nextText()
                     }
                 }
             }
@@ -60,6 +88,16 @@ class TestApplication : Application() {
             xpp.next()
         }
 
-        return Credentials(clientId, redirectUrl, scopes)
+        return TestCredentials(
+            clientId,
+            redirectUrl,
+
+            scriptClientId,
+            scriptClientSecret,
+            username,
+            password,
+
+            scopes
+        )
     }
 }

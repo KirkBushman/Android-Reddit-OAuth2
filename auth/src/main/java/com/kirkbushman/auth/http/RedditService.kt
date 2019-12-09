@@ -11,19 +11,21 @@ import retrofit2.http.Query
 
 interface RedditService {
 
-    @GET("api/v1/scopes")
+    @GET("/api/v1/scopes")
     fun getScopes(): Call<ScopesEnvelope>
 
-    @POST("api/v1/access_token")
+    @POST("/api/v1/access_token")
     fun getAccessToken(
         @HeaderMap header: HashMap<String, String>,
 
-        @Query("grant_type") grantType: String = "authorization_code",
-        @Query("code") code: String,
-        @Query("redirect_uri") redirectUrl: String
+        @Query("grant_type") grantType: String,
+        @Query("code") code: String? = null,
+        @Query("redirect_uri") redirectUrl: String? = null,
+        @Query("username") username: String? = null,
+        @Query("password") password: String? = null
     ): Call<Token>
 
-    @POST("api/v1/access_token")
+    @POST("/api/v1/access_token")
     fun renewToken(
         @HeaderMap header: HashMap<String, String>,
 
@@ -31,7 +33,7 @@ interface RedditService {
         @Query("refresh_token") refreshToken: String
     ): Call<RefreshToken>
 
-    @POST("api/v1/revoke_token")
+    @POST("/api/v1/revoke_token")
     fun revoke(
         @HeaderMap header: HashMap<String, String>,
 

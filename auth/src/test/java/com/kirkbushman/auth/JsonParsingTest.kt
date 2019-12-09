@@ -1,7 +1,6 @@
 package com.kirkbushman.auth
 
 import com.kirkbushman.auth.http.RedditService
-import com.kirkbushman.auth.managers.RedditAuthManager
 import org.junit.Test
 import retrofit2.Retrofit
 import retrofit2.converter.moshi.MoshiConverterFactory
@@ -35,7 +34,7 @@ class JsonParsingTest {
     fun testForScopesFromAuthClient() {
 
         try {
-            val scopes = RedditAuthManager.getScopes()
+            val scopes = RedditAuth.getScopes()
             assert(scopes != null)
             if (scopes != null) {
 

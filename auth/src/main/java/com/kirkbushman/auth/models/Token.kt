@@ -5,7 +5,6 @@ import com.squareup.moshi.Json
 import com.squareup.moshi.JsonClass
 import kotlinx.android.parcel.IgnoredOnParcel
 import kotlinx.android.parcel.Parcelize
-import java.io.Serializable
 
 /**
  * Token used to interact with the API.
@@ -27,7 +26,7 @@ data class Token(
      * The refresh token is used to get new access tokens, when they expire.
      */
     @Json(name = "refresh_token")
-    val refreshToken: String,
+    val refreshToken: String?,
 
     /**
      * The string "bearer"
@@ -54,7 +53,7 @@ data class Token(
     @Json(name = "scope")
     val scopes: String
 
-) : Parcelable, Serializable {
+) : Parcelable {
 
     @IgnoredOnParcel
     val expirationTime by lazy { createdTime + expiresInSecs }
@@ -79,9 +78,5 @@ data class Token(
             createdTime = refreshToken.createdTime,
             scopes = refreshToken.scopes
         )
-    }
-
-    override fun toString(): String {
-        return "Token { accessToken: $accessToken, refreshToken: $refreshToken, tokenType: $tokenType, expiresInSecs: $expiresInSecs, createdTime: $createdTime, scope: $scopes }"
     }
 }

@@ -27,6 +27,8 @@
             </intent-filter>
         </activity>
 
+        <activity android:name=".InstalledActivity">
+        </activity>
         <activity android:name=".TokenInfoActivity">
         </activity>
 

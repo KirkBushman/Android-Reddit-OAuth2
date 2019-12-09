@@ -11,7 +11,7 @@ interface StorageManager {
     fun isAuthed(): Boolean
 
     fun hasToken(): Boolean
-    fun getToken(): Token
+    fun getToken(): Token?
 
     fun saveToken(token: Token)
     fun deleteToken()

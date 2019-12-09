@@ -31,7 +31,7 @@ class TokenInfoActivity : AppCompatActivity() {
             it.setDisplayShowHomeEnabled(true)
         }
 
-        token_info.text = bearer.toString()
+        token_info.text = bearer.getRawAccessToken()
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
@@ -52,7 +52,7 @@ class TokenInfoActivity : AppCompatActivity() {
                     bearer.renewToken()
                 }, onPost = {
                     val now = SimpleDateFormat("dd-MM-yyyy HH:mm", Locale.getDefault()).format(Date())
-                    val newText = "$bearer, Refreshed $now"
+                    val newText = "${bearer.getRawAccessToken()}, Refreshed $now"
 
                     token_info.text = newText
 
