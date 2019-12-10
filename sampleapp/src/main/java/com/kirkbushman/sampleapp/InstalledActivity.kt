@@ -23,13 +23,15 @@ class InstalledActivity : AppCompatActivity() {
             it.setDisplayShowHomeEnabled(true)
         }
 
-        TestApplication.instance.loadClient(AuthType.INSTALLED_APP)
-        val authClient = TestApplication.instance.authClient
+        val app = TestApplication.instance
+
+        app.loadClient(AuthType.INSTALLED_APP)
+        val authClient = app.authClient
 
         if (authClient != null && authClient.hasSavedBearer()) {
 
             val bearer = authClient.getSavedBearer()
-            TestApplication.instance.setBearer(bearer)
+            app.setBearer(bearer)
 
             val intent = Intent(this, TokenInfoActivity::class.java)
             startActivity(intent)
@@ -49,7 +51,7 @@ class InstalledActivity : AppCompatActivity() {
                             val bearer = authClient.getTokenBearer(url)
                             Log.i("SUCCESS", bearer?.toString() ?: "The bearer is null")
 
-                            TestApplication.instance.setBearer(bearer!!)
+                            app.setBearer(bearer!!)
 
                             val intent = Intent(this@InstalledActivity, TokenInfoActivity::class.java)
                             startActivity(intent)

@@ -9,6 +9,7 @@ import com.kirkbushman.auth.http.RedditService
 import com.kirkbushman.auth.managers.StorageManager
 import com.kirkbushman.auth.models.ApplicationCredentials
 import com.kirkbushman.auth.models.AuthType
+import com.kirkbushman.auth.models.RefreshToken
 import com.kirkbushman.auth.models.Scope
 import com.kirkbushman.auth.models.ScopesEnvelope
 import com.kirkbushman.auth.models.ScriptCredentials
@@ -17,10 +18,10 @@ import com.kirkbushman.auth.models.TokenBearer
 import com.kirkbushman.auth.models.base.Credentials
 import com.kirkbushman.auth.utils.Utils.addParamsToUrl
 import com.kirkbushman.auth.utils.Utils.generateRandomString
+import com.kirkbushman.auth.utils.Utils.getRetrofit
 import com.kirkbushman.auth.utils.toHeaderString
 import com.kirkbushman.auth.utils.toSeparatedString
-import retrofit2.Retrofit
-import retrofit2.converter.moshi.MoshiConverterFactory
+import retrofit2.Call
 
 /**
  * Class that is needed to interact with reddit authentication using a webView in
@@ -33,7 +34,9 @@ class RedditAuth private constructor(
 
     private val scopes: String,
 
-    private val storManager: StorageManager
+    private val storManager: StorageManager,
+
+    logging: Boolean
 ) {
 
     companion object {
@@ -44,14 +47,15 @@ class RedditAuth private constructor(
         private val stateRegex = Regex("(?<=(state=))([a-zA-Z0-9]|-|_)+(?=(&|\\s|))")
         private val errorRegex = Regex("(?<=(error=))([a-zA-Z0-9]|-|_)+(?=(&|\\s|))")
 
-        private val retrofit = Retrofit.Builder()
-            .baseUrl(BASE_URL)
-            .addConverterFactory(MoshiConverterFactory.create())
-            .build()
+        private var instance: RedditAuth? = null
+        fun instance(): RedditAuth? {
+            return instance
+        }
 
-        val api: RedditService = retrofit.create(RedditService::class.java)
+        fun getScopes(logging: Boolean = false): ScopesEnvelope? {
+            val retrofit = getRetrofit(logging)
+            val api = retrofit.create(RedditService::class.java)
 
-        fun getScopes(): ScopesEnvelope? {
             val req = api.getScopes()
             val res = req.execute()
 
@@ -62,6 +66,9 @@ class RedditAuth private constructor(
             }
         }
     }
+
+    private val retrofit by lazy { getRetrofit(logging) }
+    private val api: RedditService by lazy { retrofit.create(RedditService::class.java) }
 
     private val authType: AuthType = when (credentials) {
         is ApplicationCredentials -> AuthType.INSTALLED_APP
@@ -105,9 +112,11 @@ class RedditAuth private constructor(
          * Can be extended using the method you prefer, this lib provides a working
          * example with SharedPreferences
          */
-        storManager: StorageManager
+        storManager: StorageManager,
 
-    ) : this (credentials, scopes, storManager) {
+        logging: Boolean = false
+
+    ) : this (credentials, scopes, storManager, logging) {
 
         this.state = state
     }
@@ -143,12 +152,18 @@ class RedditAuth private constructor(
          * Can be extended using the method you prefer, this lib provides a working
          * example with SharedPreferences
          */
-        storManager: StorageManager
+        storManager: StorageManager,
 
-    ) : this (credentials as Credentials, scopes, storManager)
+        logging: Boolean = false
+
+    ) : this (credentials as Credentials, scopes, storManager, logging)
 
     fun getAuthType(): AuthType {
         return authType
+    }
+
+    init {
+        instance = this
     }
 
     fun provideAuthorizeUrl(): String {
@@ -307,6 +322,45 @@ class RedditAuth private constructor(
         return null
     }
 
+    fun getRenewTokenRequest(token: Token): Call<RefreshToken>? {
+
+        if (authType == AuthType.INSTALLED_APP) {
+
+            return api.renewToken(
+                header = "${credentials.clientId}:".toHeaderString(),
+
+                refreshToken = token.refreshToken!!
+            )
+        }
+
+        return null
+    }
+
+    fun getRevokeTokenRequest(token: Token): Call<Any>? {
+
+        if (authType == AuthType.INSTALLED_APP) {
+
+            return api.revoke(
+                header = "${credentials.clientId}:".toHeaderString(),
+
+                token = token.refreshToken!!,
+                tokenTypeHint = "refresh_token"
+            )
+        }
+
+        if (authType == AuthType.SCRIPT) {
+
+            return api.revoke(
+                header = "${(credentials as ScriptCredentials).clientId}:${credentials.clientSecret}".toHeaderString(),
+
+                token = token.accessToken,
+                tokenTypeHint = "access_token"
+            )
+        }
+
+        return null
+    }
+
     fun hasSavedBearer(): Boolean {
         return storManager.isAuthed() && storManager.hasToken()
     }
@@ -321,6 +375,8 @@ class RedditAuth private constructor(
 
         private var scopes = ""
         private var storManager: StorageManager? = null
+
+        private var logging: Boolean = false
 
         fun setCredentials(credentials: ApplicationCredentials): Builder {
             this.credentials = credentials
@@ -362,6 +418,11 @@ class RedditAuth private constructor(
             return this
         }
 
+        fun setLogging(logging: Boolean): Builder {
+            this.logging = logging
+            return this
+        }
+
         fun build(): RedditAuth {
 
             if (credentials != null &&
@@ -374,7 +435,8 @@ class RedditAuth private constructor(
                     state = state,
                     scopes = scopes,
                     storManager = storManager
-                        ?: throw IllegalArgumentException("StorageManager must not be null!")
+                        ?: throw IllegalArgumentException("StorageManager must not be null!"),
+                    logging = logging
                 )
             }
 
@@ -385,7 +447,8 @@ class RedditAuth private constructor(
                     credentials = credentials as ScriptCredentials,
                     scopes = scopes,
                     storManager = storManager
-                        ?: throw IllegalArgumentException("StorageManager must not be null!")
+                        ?: throw IllegalArgumentException("StorageManager must not be null!"),
+                    logging = logging
                 )
             }
 

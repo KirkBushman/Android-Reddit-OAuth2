@@ -36,14 +36,12 @@ androidExtensions {
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
 
-    testImplementation "junit:junit:$junit_ver"
-    testImplementation "com.nhaarman.mockitokotlin2:mockito-kotlin:$mockito_ver"
-    testImplementation "xyz.nulldev.huandroid:huandroid:$htmlunit_ver"
-
-
     implementation "androidx.core:core-ktx:$ktx_ver"
 
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_ver"
+
+    implementation "com.squareup.okhttp3:okhttp:$okhttp_ver"
+    implementation "com.squareup.okhttp3:logging-interceptor:$okhttp_ver"
 
     implementation "com.squareup.retrofit2:retrofit:$retrofit_ver"
     implementation "com.squareup.retrofit2:converter-moshi:$retrofit_ver"

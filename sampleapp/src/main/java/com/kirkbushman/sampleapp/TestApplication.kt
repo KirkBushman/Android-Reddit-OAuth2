@@ -26,15 +26,17 @@ class TestApplication : Application() {
                     .setCredentials(creds.clientId, creds.redirectUrl)
                     .setScopes(creds.scopes.toTypedArray())
                     .setStorageManager(SharedPrefsStorageManager(this))
+                    .setLogging(true)
                     .build()
             }
 
             AuthType.SCRIPT -> {
 
                 RedditAuth.Builder()
-                    .setCredentials(creds.clientId, creds.redirectUrl)
+                    .setCredentials(creds.username, creds.password, creds.scriptClientId, creds.scriptClientSecret)
                     .setScopes(creds.scopes.toTypedArray())
                     .setStorageManager(SharedPrefsStorageManager(this))
+                    .setLogging(true)
                     .build()
             }
 

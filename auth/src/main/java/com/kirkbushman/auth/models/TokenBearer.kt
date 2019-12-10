@@ -3,7 +3,6 @@ package com.kirkbushman.auth.models
 import com.kirkbushman.auth.RedditAuth
 import com.kirkbushman.auth.managers.StorageManager
 import com.kirkbushman.auth.models.base.Credentials
-import com.kirkbushman.auth.utils.toHeaderString
 
 /**
  * Class that holds and manages the token.
@@ -72,26 +71,24 @@ class TokenBearer(
             return
         }
 
-        val req = RedditAuth.api.revoke(
-            header = "${credentials.clientId}:".toHeaderString(),
+        if (token != null) {
 
-            token = token!!.accessToken,
-            tokenTypeHint = "access_token"
-        )
+            val req = RedditAuth.instance()?.getRevokeTokenRequest(token!!)
 
-        val res = req.execute()
-        if (res.isSuccessful) {
+            val res = req?.execute() ?: return
+            if (res.isSuccessful) {
 
-            // if successful set the token null, clear the one saven on store
-            token = null
-            isRevoked = true
+                // if successful set the token null, clear the one saven on store
+                token = null
+                isRevoked = true
 
-            storManager.deleteToken()
+                storManager.deleteToken()
 
-            return
+                return
+            }
+
+            throw IllegalStateException("Response was unsuccessful while revoking access token!")
         }
-
-        throw IllegalStateException("Response was unsuccessful while revoking access token!")
     }
 
     fun isRevoked(): Boolean {
@@ -112,27 +109,25 @@ class TokenBearer(
             return
         }
 
-        val req = RedditAuth.api.renewToken(
+        if (token != null) {
+            val req = RedditAuth.instance()?.getRenewTokenRequest(token!!)
 
-            header = "${credentials.clientId}:".toHeaderString(),
-            refreshToken = token!!.refreshToken!!
-        )
+            val res = req?.execute() ?: return
+            if (res.isSuccessful) {
 
-        val res = req.execute()
-        if (res.isSuccessful) {
+                val newRefreshToken = (res.body()
+                    ?: IllegalStateException("Response is null!")) as RefreshToken
 
-            val newRefreshToken = (res.body()
-                ?: IllegalStateException("Response is null!")) as RefreshToken
+                // If the request was successful replace the new token
+                token = token!!.generateNewFrom(newRefreshToken)
 
-            // If the request was successful replace the new token
-            token = token!!.generateNewFrom(newRefreshToken)
+                // and save it the store for the future
+                storManager.saveToken(token!!)
 
-            // and save it the store for the future
-            storManager.saveToken(token!!)
+                return
+            }
 
-            return
+            throw IllegalStateException("Response was unsuccessful while renewing token!")
         }
-
-        throw IllegalStateException("Response was unsuccessful while renewing token!")
     }
 }
