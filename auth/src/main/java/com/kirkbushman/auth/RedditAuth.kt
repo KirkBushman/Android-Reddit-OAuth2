@@ -17,11 +17,12 @@ import com.kirkbushman.auth.models.Token
 import com.kirkbushman.auth.models.TokenBearer
 import com.kirkbushman.auth.models.base.Credentials
 import com.kirkbushman.auth.utils.Utils.addParamsToUrl
+import com.kirkbushman.auth.utils.Utils.buildRetrofit
 import com.kirkbushman.auth.utils.Utils.generateRandomString
-import com.kirkbushman.auth.utils.Utils.getRetrofit
 import com.kirkbushman.auth.utils.toHeaderString
 import com.kirkbushman.auth.utils.toSeparatedString
 import retrofit2.Call
+import retrofit2.Retrofit
 
 /**
  * Class that is needed to interact with reddit authentication using a webView in
@@ -30,13 +31,13 @@ import retrofit2.Call
 @Suppress("unused")
 class RedditAuth private constructor(
 
+    private val retrofit: Retrofit,
+
     private val credentials: Credentials,
 
     private val scopes: String,
 
-    private val storManager: StorageManager,
-
-    logging: Boolean
+    private val storManager: StorageManager
 ) {
 
     companion object {
@@ -53,7 +54,7 @@ class RedditAuth private constructor(
         }
 
         fun getScopes(logging: Boolean = false): ScopesEnvelope? {
-            val retrofit = getRetrofit(logging)
+            val retrofit = buildRetrofit(BASE_URL, logging)
             val api = retrofit.create(RedditService::class.java)
 
             val req = api.getScopes()
@@ -67,7 +68,6 @@ class RedditAuth private constructor(
         }
     }
 
-    private val retrofit by lazy { getRetrofit(logging) }
     private val api: RedditService by lazy { retrofit.create(RedditService::class.java) }
 
     private val authType: AuthType = when (credentials) {
@@ -81,6 +81,11 @@ class RedditAuth private constructor(
 
     // Installed App Authentication
     constructor(
+
+        /**
+         * Singleton that can be passed externally or created by the builder object
+         */
+        retrofit: Retrofit,
 
         /**
          * Contains
@@ -112,17 +117,20 @@ class RedditAuth private constructor(
          * Can be extended using the method you prefer, this lib provides a working
          * example with SharedPreferences
          */
-        storManager: StorageManager,
+        storManager: StorageManager
 
-        logging: Boolean = false
-
-    ) : this (credentials, scopes, storManager, logging) {
+    ) : this (retrofit, credentials, scopes, storManager) {
 
         this.state = state
     }
 
     // Script App Authentication
     constructor(
+
+        /**
+         * Singleton that can be passed externally or created by the builder object
+         */
+        retrofit: Retrofit,
 
         /**
          * Contains
@@ -152,11 +160,9 @@ class RedditAuth private constructor(
          * Can be extended using the method you prefer, this lib provides a working
          * example with SharedPreferences
          */
-        storManager: StorageManager,
+        storManager: StorageManager
 
-        logging: Boolean = false
-
-    ) : this (credentials as Credentials, scopes, storManager, logging)
+    ) : this (retrofit, credentials as Credentials, scopes, storManager)
 
     fun getAuthType(): AuthType {
         return authType
@@ -371,12 +377,19 @@ class RedditAuth private constructor(
 
     class Builder {
 
+        private var retrofit: Retrofit? = null
+
         private var credentials: Credentials? = null
 
         private var scopes = ""
         private var storManager: StorageManager? = null
 
         private var logging: Boolean = false
+
+        fun setRetrofit(retrofit: Retrofit): Builder {
+            this.retrofit = retrofit
+            return this
+        }
 
         fun setCredentials(credentials: ApplicationCredentials): Builder {
             this.credentials = credentials
@@ -431,12 +444,12 @@ class RedditAuth private constructor(
                 val state = generateRandomString()
 
                 return RedditAuth(
+                    retrofit = retrofit ?: buildRetrofit(BASE_URL, logging),
                     credentials = credentials as ApplicationCredentials,
                     state = state,
                     scopes = scopes,
                     storManager = storManager
-                        ?: throw IllegalArgumentException("StorageManager must not be null!"),
-                    logging = logging
+                        ?: throw IllegalArgumentException("StorageManager must not be null!")
                 )
             }
 
@@ -444,11 +457,11 @@ class RedditAuth private constructor(
                 credentials is ScriptCredentials) {
 
                 return RedditAuth(
+                    retrofit = retrofit ?: buildRetrofit(BASE_URL, logging),
                     credentials = credentials as ScriptCredentials,
                     scopes = scopes,
                     storManager = storManager
-                        ?: throw IllegalArgumentException("StorageManager must not be null!"),
-                    logging = logging
+                        ?: throw IllegalArgumentException("StorageManager must not be null!")
                 )
             }
 

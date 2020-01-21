@@ -33,6 +33,10 @@ androidExtensions {
     experimental = true
 }
 
+kapt {
+    useBuildCache = true
+}
+
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
 

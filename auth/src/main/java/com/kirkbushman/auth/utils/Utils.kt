@@ -9,8 +9,6 @@ import retrofit2.converter.moshi.MoshiConverterFactory
 
 object Utils {
 
-    private const val BASE_URL = "https://www.reddit.com"
-
     private val STRING_CHARACTERS = ('0'..'9').plus('a'..'z').toTypedArray()
 
     fun addParamsToUrl(url: String, array: Array<String>): String {
@@ -21,9 +19,9 @@ object Utils {
         return (1..32).map { STRING_CHARACTERS.random() }.joinToString("")
     }
 
-    fun getRetrofit(logging: Boolean): Retrofit {
+    fun buildRetrofit(baseUrl: String, logging: Boolean): Retrofit {
         return Retrofit.Builder()
-            .baseUrl(BASE_URL)
+            .baseUrl(baseUrl)
             .addConverterFactory(MoshiConverterFactory.create())
             .client(getOkHttpClient(logging))
             .build()
