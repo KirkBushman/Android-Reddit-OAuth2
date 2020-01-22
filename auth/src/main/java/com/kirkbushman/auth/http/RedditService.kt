@@ -8,14 +8,18 @@ import retrofit2.http.GET
 import retrofit2.http.HeaderMap
 import retrofit2.http.POST
 import retrofit2.http.Query
+import retrofit2.http.Url
 
 interface RedditService {
 
-    @GET("/api/v1/scopes")
-    fun getScopes(): Call<ScopesEnvelope>
+    @GET
+    fun getScopes(
+        @Url url: String = "https://www.reddit.com/api/v1/scopes"
+    ): Call<ScopesEnvelope>
 
-    @POST("/api/v1/access_token")
+    @POST
     fun getAccessToken(
+        @Url url: String = "https://www.reddit.com/api/v1/access_token",
         @HeaderMap header: HashMap<String, String>,
 
         @Query("grant_type") grantType: String,
@@ -25,16 +29,18 @@ interface RedditService {
         @Query("password") password: String? = null
     ): Call<Token>
 
-    @POST("/api/v1/access_token")
+    @POST
     fun renewToken(
+        @Url url: String = "https://www.reddit.com/api/v1/access_token",
         @HeaderMap header: HashMap<String, String>,
 
         @Query("grant_type") grantType: String = "refresh_token",
         @Query("refresh_token") refreshToken: String
     ): Call<RefreshToken>
 
-    @POST("/api/v1/revoke_token")
+    @POST
     fun revoke(
+        @Url url: String = "https://www.reddit.com/api/v1/revoke_token",
         @HeaderMap header: HashMap<String, String>,
 
         @Query("token") token: String,

@@ -46,6 +46,8 @@ dependencies {
 
     implementation project(':auth')
 
+    implementation "com.squareup.retrofit2:retrofit:$retrofit_ver"
+
     implementation "com.google.android.material:material:$mdc_ver"
     implementation "androidx.core:core-ktx:$ktx_ver"
     implementation 'androidx.appcompat:appcompat:1.1.0'

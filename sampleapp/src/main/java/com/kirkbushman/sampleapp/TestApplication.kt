@@ -5,6 +5,7 @@ import com.kirkbushman.auth.RedditAuth
 import com.kirkbushman.auth.managers.SharedPrefsStorageManager
 import com.kirkbushman.auth.models.AuthType
 import com.kirkbushman.auth.models.TokenBearer
+import com.kirkbushman.auth.utils.Utils.buildRetrofit
 import org.xmlpull.v1.XmlPullParser
 
 class TestApplication : Application() {
@@ -23,6 +24,7 @@ class TestApplication : Application() {
             AuthType.INSTALLED_APP -> {
 
                 RedditAuth.Builder()
+                    .setRetrofit(buildRetrofit("https://github.com", true))
                     .setCredentials(creds.clientId, creds.redirectUrl)
                     .setScopes(creds.scopes.toTypedArray())
                     .setStorageManager(SharedPrefsStorageManager(this))
@@ -33,6 +35,7 @@ class TestApplication : Application() {
             AuthType.SCRIPT -> {
 
                 RedditAuth.Builder()
+                    .setRetrofit(buildRetrofit("https://github.com", true))
                     .setCredentials(creds.username, creds.password, creds.scriptClientId, creds.scriptClientSecret)
                     .setScopes(creds.scopes.toTypedArray())
                     .setStorageManager(SharedPrefsStorageManager(this))
