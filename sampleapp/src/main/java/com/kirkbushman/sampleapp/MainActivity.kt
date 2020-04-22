@@ -21,28 +21,28 @@ class MainActivity : AppCompatActivity() {
 
         installed_bttn.setOnClickListener {
 
+            val app = TestApplication.instance
+            app.loadClient(AuthType.INSTALLED_APP)
+
             val intent = Intent(this, InstalledActivity::class.java)
             startActivity(intent)
         }
 
-        script_bttn.setOnClickListener {
+        userless_bttn.setOnClickListener {
 
             val app = TestApplication.instance
-            app.loadClient(AuthType.SCRIPT)
+            app.loadClient(AuthType.USERLESS)
 
-            var bearer: TokenBearer? = null
             val authClient = app.authClient
-
             if (authClient != null && authClient.hasSavedBearer()) {
-
-                bearer = authClient.getSavedBearer()
-                app.setBearer(bearer)
 
                 val intent = Intent(this, TokenInfoActivity::class.java)
                 startActivity(intent)
             } else {
 
-                doAsync(doWork = {
+                var bearer: TokenBearer? = null
+
+                DoAsync(doWork = {
 
                     bearer = authClient?.getTokenBearer()
                 }, onPost = {
@@ -55,6 +55,44 @@ class MainActivity : AppCompatActivity() {
                     startActivity(intent)
                 })
             }
+        }
+
+        script_bttn.setOnClickListener {
+
+            val app = TestApplication.instance
+            app.loadClient(AuthType.SCRIPT)
+
+            val authClient = app.authClient
+            if (authClient != null && authClient.hasSavedBearer()) {
+
+                val intent = Intent(this, TokenInfoActivity::class.java)
+                startActivity(intent)
+            } else {
+
+                var bearer: TokenBearer? = null
+
+                DoAsync(doWork = {
+
+                    bearer = authClient?.getTokenBearer()
+                }, onPost = {
+
+                    if (bearer != null) {
+                        app.setBearer(bearer!!)
+                    }
+
+                    val intent = Intent(this, TokenInfoActivity::class.java)
+                    startActivity(intent)
+                })
+            }
+        }
+
+        token_info_bttn.setOnClickListener {
+
+            val app = TestApplication.instance
+            app.loadClient()
+
+            val intent = Intent(this, TokenInfoActivity::class.java)
+            startActivity(intent)
         }
     }
 }

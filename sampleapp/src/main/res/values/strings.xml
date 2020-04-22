@@ -5,5 +5,7 @@
     <string name="action_revoke">Revoke</string>
 
     <string name="bttn_installed">Installed App Auth.</string>
+    <string name="bttn_userless">Userless App Auth.</string>
     <string name="bttn_script">Script Only Auth.</string>
+    <string name="bttn_token_info">Token Info</string>
 </resources>

@@ -2,7 +2,7 @@ package com.kirkbushman.sampleapp
 
 import android.os.AsyncTask
 
-class doAsync(private val doWork: () -> Unit, private val onPost: (() -> Unit)? = null) : AsyncTask<Void, Void, Void>() {
+class DoAsync(private val doWork: () -> Unit, private val onPost: (() -> Unit)? = null) : AsyncTask<Void, Void, Void>() {
     init {
         execute()
     }

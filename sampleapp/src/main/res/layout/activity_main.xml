@@ -10,11 +10,10 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
-        <androidx.appcompat.widget.Toolbar
+        <com.google.android.material.appbar.MaterialToolbar
                 android:id="@+id/toolbar"
                 android:layout_width="match_parent"
-                android:layout_height="?attr/actionBarSize"
-        />
+                android:layout_height="?attr/actionBarSize" />
 
     </com.google.android.material.appbar.AppBarLayout>
 
@@ -33,11 +32,27 @@
                 />
 
         <com.google.android.material.button.MaterialButton
+                android:id="@+id/userless_bttn"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="8dp"
+                android:text="@string/bttn_userless"
+                />
+
+        <com.google.android.material.button.MaterialButton
                 android:id="@+id/script_bttn"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_margin="8dp"
                 android:text="@string/bttn_script"
+                />
+
+        <com.google.android.material.button.MaterialButton
+                android:id="@+id/token_info_bttn"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="8dp"
+                android:text="@string/bttn_token_info"
                 />
 
     </LinearLayout>

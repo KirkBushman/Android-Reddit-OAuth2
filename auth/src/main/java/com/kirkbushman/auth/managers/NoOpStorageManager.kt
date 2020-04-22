@@ -1,11 +1,16 @@
 package com.kirkbushman.auth.managers
 
+import com.kirkbushman.auth.models.AuthType
 import com.kirkbushman.auth.models.Token
 
 class NoOpStorageManager : StorageManager {
 
     override fun isAuthed(): Boolean {
         return false
+    }
+
+    override fun authType(): AuthType {
+        return AuthType.NONE
     }
 
     override fun hasToken(): Boolean {
@@ -16,7 +21,6 @@ class NoOpStorageManager : StorageManager {
         return null
     }
 
-    override fun saveToken(token: Token) {}
-    override fun deleteToken() {}
+    override fun saveToken(token: Token, authType: AuthType) {}
     override fun clearAll() {}
 }

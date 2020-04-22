@@ -26,7 +26,9 @@ interface RedditService {
         @Query("code") code: String? = null,
         @Query("redirect_uri") redirectUrl: String? = null,
         @Query("username") username: String? = null,
-        @Query("password") password: String? = null
+        @Query("password") password: String? = null,
+        @Query("duration") duration: String? = null,
+        @Query("device_id") deviceId: String? = null
     ): Call<Token>
 
     @POST

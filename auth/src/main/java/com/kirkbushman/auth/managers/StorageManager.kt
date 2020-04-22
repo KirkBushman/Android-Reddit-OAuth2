@@ -1,5 +1,6 @@
 package com.kirkbushman.auth.managers
 
+import com.kirkbushman.auth.models.AuthType
 import com.kirkbushman.auth.models.Token
 
 /**
@@ -10,11 +11,12 @@ interface StorageManager {
 
     fun isAuthed(): Boolean
 
+    fun authType(): AuthType
+
     fun hasToken(): Boolean
     fun getToken(): Token?
 
-    fun saveToken(token: Token)
-    fun deleteToken()
+    fun saveToken(token: Token, authType: AuthType)
 
     fun clearAll()
 }

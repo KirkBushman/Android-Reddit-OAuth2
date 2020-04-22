@@ -6,6 +6,8 @@ import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.converter.moshi.MoshiConverterFactory
+import java.util.*
+import kotlin.collections.HashMap
 
 object Utils {
 
@@ -17,6 +19,10 @@ object Utils {
 
     fun generateRandomString(): String {
         return (1..32).map { STRING_CHARACTERS.random() }.joinToString("")
+    }
+
+    fun getDeviceUUID(): String {
+        return UUID.randomUUID().toString()
     }
 
     fun buildRetrofit(baseUrl: String, logging: Boolean): Retrofit {

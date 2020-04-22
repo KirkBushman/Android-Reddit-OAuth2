@@ -10,7 +10,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
-        <androidx.appcompat.widget.Toolbar
+        <com.google.android.material.appbar.MaterialToolbar
                 android:id="@+id/toolbar"
                 android:layout_width="match_parent"
                 android:layout_height="?attr/actionBarSize"
@@ -18,19 +18,74 @@
 
     </com.google.android.material.appbar.AppBarLayout>
 
-    <LinearLayout
-            android:id="@+id/vertical"
+    <androidx.core.widget.NestedScrollView
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="vertical"
+            android:layout_height="wrap_content"
             app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
-        <TextView
-                android:id="@+id/token_info"
+        <LinearLayout
+                android:id="@+id/vertical"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_margin="16dp" />
+                android:layout_height="match_parent"
+                android:orientation="vertical">
 
-    </LinearLayout>
+            <com.google.android.material.textview.MaterialTextView
+                    android:id="@+id/token_info_message"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="16dp"
+                    android:textStyle="bold" />
+
+            <com.google.android.material.textview.MaterialTextView
+                    android:id="@+id/token_info_is_authed"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="16dp" />
+
+            <com.google.android.material.textview.MaterialTextView
+                    android:id="@+id/token_info_auth_type"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="16dp" />
+
+            <com.google.android.material.textview.MaterialTextView
+                    android:id="@+id/token_info_access_token"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="16dp" />
+
+            <com.google.android.material.textview.MaterialTextView
+                    android:id="@+id/token_info_refresh_token"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="16dp" />
+
+            <com.google.android.material.textview.MaterialTextView
+                    android:id="@+id/token_info_token_type"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="16dp" />
+
+            <com.google.android.material.textview.MaterialTextView
+                    android:id="@+id/token_info_expires_in"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="16dp" />
+
+            <com.google.android.material.textview.MaterialTextView
+                    android:id="@+id/token_info_created_time"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="16dp" />
+
+            <com.google.android.material.textview.MaterialTextView
+                    android:id="@+id/token_info_scopes"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="16dp" />
+
+        </LinearLayout>
+
+    </androidx.core.widget.NestedScrollView>
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

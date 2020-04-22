@@ -4,11 +4,9 @@ import android.content.Intent
 import android.graphics.Bitmap
 import android.os.Bundle
 import android.util.Log
-import android.webkit.CookieManager
 import android.webkit.WebView
 import android.webkit.WebViewClient
 import androidx.appcompat.app.AppCompatActivity
-import com.kirkbushman.auth.models.AuthType
 import kotlinx.android.synthetic.main.activity_installed.*
 
 class InstalledActivity : AppCompatActivity() {
@@ -24,8 +22,6 @@ class InstalledActivity : AppCompatActivity() {
         }
 
         val app = TestApplication.instance
-
-        app.loadClient(AuthType.INSTALLED_APP)
         val authClient = app.authClient
 
         if (authClient != null && authClient.hasSavedBearer()) {
@@ -37,14 +33,13 @@ class InstalledActivity : AppCompatActivity() {
             startActivity(intent)
         } else {
 
-            CookieManager.getInstance().removeAllCookies(null)
             browser.webViewClient = object : WebViewClient() {
                 override fun onPageStarted(view: WebView, url: String, favicon: Bitmap?) {
 
                     if (authClient!!.isRedirectedUrl(url)) {
                         browser.stopLoading()
 
-                        doAsync(doWork = {
+                        DoAsync(doWork = {
 
                             Log.i("Response URL", url)
 

@@ -3,6 +3,7 @@ package com.kirkbushman.auth.models
 import com.squareup.moshi.Json
 import com.squareup.moshi.JsonClass
 
+@Suppress("MemberVisibilityCanBePrivate")
 @JsonClass(generateAdapter = true)
 data class ScopesEnvelope(
 

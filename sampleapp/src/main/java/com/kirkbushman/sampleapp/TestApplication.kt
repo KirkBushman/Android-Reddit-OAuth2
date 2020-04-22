@@ -16,43 +16,40 @@ class TestApplication : Application() {
 
     var authClient: RedditAuth? = null
 
-    fun loadClient(authType: AuthType) {
+    fun loadClient(authType: AuthType? = null) {
 
         val creds = loadCredsFromFile()
 
-        authClient = when (authType) {
-            AuthType.INSTALLED_APP -> {
+        authClient = if (authType != null) {
+            getRedditAuth(creds, authType)
+        } else {
 
-                RedditAuth.Builder()
-                    .setRetrofit(buildRetrofit("https://github.com", true))
-                    .setCredentials(creds.clientId, creds.redirectUrl)
-                    .setScopes(creds.scopes.toTypedArray())
-                    .setStorageManager(SharedPrefsStorageManager(this))
-                    .setLogging(true)
-                    .build()
+            val storManager = SharedPrefsStorageManager(this)
+            if (storManager.isAuthed()) {
+
+                getRedditAuth(creds, storManager.authType())
+            } else {
+
+                null
             }
-
-            AuthType.SCRIPT -> {
-
-                RedditAuth.Builder()
-                    .setRetrofit(buildRetrofit("https://github.com", true))
-                    .setCredentials(creds.username, creds.password, creds.scriptClientId, creds.scriptClientSecret)
-                    .setScopes(creds.scopes.toTypedArray())
-                    .setStorageManager(SharedPrefsStorageManager(this))
-                    .setLogging(true)
-                    .build()
-            }
-
-            else -> null
         }
     }
 
-    private var bearer: TokenBearer? = null
+    var savedBearer: TokenBearer? = null
     fun getBearer(): TokenBearer? {
-        return bearer
+
+        if (savedBearer == null) {
+
+            if (authClient?.hasSavedBearer() == true) {
+                savedBearer = authClient?.getSavedBearer()
+            }
+        }
+
+        return savedBearer
     }
+
     fun setBearer(bearer: TokenBearer) {
-        this.bearer = bearer
+        this.savedBearer = bearer
     }
 
     init {
@@ -104,5 +101,50 @@ class TestApplication : Application() {
 
             scopes
         )
+    }
+
+    private fun getRedditAuth(creds: TestCredentials, authType: AuthType?): RedditAuth? {
+
+        return when (authType) {
+            AuthType.INSTALLED_APP -> {
+
+                RedditAuth.Builder()
+                    .setRetrofit(buildRetrofit("https://github.com", true))
+                    .setApplicationCredentials(creds.clientId, creds.redirectUrl)
+                    .setScopes(creds.scopes.toTypedArray())
+                    .setStorageManager(SharedPrefsStorageManager(this))
+                    .setLogging(true)
+                    .build()
+            }
+
+            AuthType.USERLESS -> {
+
+                RedditAuth.Builder()
+                    .setRetrofit(buildRetrofit("https://github.com", true))
+                    .setUserlessCredentials(creds.clientId)
+                    .setScopes(creds.scopes.toTypedArray())
+                    .setStorageManager(SharedPrefsStorageManager(this))
+                    .setLogging(true)
+                    .build()
+            }
+
+            AuthType.SCRIPT -> {
+
+                RedditAuth.Builder()
+                    .setRetrofit(buildRetrofit("https://github.com", true))
+                    .setScriptAuthCredentials(
+                        creds.username,
+                        creds.password,
+                        creds.scriptClientId,
+                        creds.scriptClientSecret
+                    )
+                    .setScopes(creds.scopes.toTypedArray())
+                    .setStorageManager(SharedPrefsStorageManager(this))
+                    .setLogging(true)
+                    .build()
+            }
+
+            else -> null
+        }
     }
 }

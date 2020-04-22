@@ -1,4 +1,4 @@
-package com.kirkbushman.auth.models
+package com.kirkbushman.auth.models.creds
 
 import android.os.Parcelable
 import com.kirkbushman.auth.models.base.Credentials

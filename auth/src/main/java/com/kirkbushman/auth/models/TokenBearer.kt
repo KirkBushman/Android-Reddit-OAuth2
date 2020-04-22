@@ -1,12 +1,13 @@
 package com.kirkbushman.auth.models
 
 import com.kirkbushman.auth.RedditAuth
+import com.kirkbushman.auth.errors.RefreshTokenMissingException
 import com.kirkbushman.auth.managers.StorageManager
-import com.kirkbushman.auth.models.base.Credentials
 
 /**
  * Class that holds and manages the token.
  */
+@Suppress("MemberVisibilityCanBePrivate")
 class TokenBearer(
 
     /**
@@ -15,14 +16,15 @@ class TokenBearer(
     private val storManager: StorageManager,
 
     /**
-     * The current token that is being used, should be null only if revoked.
+     * Initial token fetched, the future instances should be managed through storManager.
      */
-    private var token: Token?,
+    token: Token?,
 
     /**
-     * ClientId and Redirect Url
+     * The type of authentication grant the token derived from:
+     * Installed Application, Userless, Script
      */
-    private val credentials: Credentials
+    authType: AuthType
 ) {
 
     private var isRevoked = false
@@ -30,16 +32,24 @@ class TokenBearer(
     init {
 
         if (token != null) {
-            storManager.saveToken(token!!)
+            storManager.saveToken(token, authType)
         }
 
         if (token == null) {
             isRevoked = true
-            storManager.deleteToken()
+            storManager.clearAll()
         }
     }
 
-    fun getRawAccessToken(): String? {
+    fun isAuthed(): Boolean {
+        return storManager.isAuthed()
+    }
+
+    fun getAuthType(): AuthType {
+        return storManager.authType()
+    }
+
+    fun getToken(): Token? {
 
         if (isRevoked()) {
             return null
@@ -49,40 +59,64 @@ class TokenBearer(
             renewToken()
         }
 
-        return token!!.accessToken
+        return storManager.getToken()
     }
 
-    fun getTokenHttpHeader(): String? {
+    fun getAccessToken(): String? {
 
         if (isRevoked()) {
             return null
         }
 
-        return "Authorization: bearer ${getRawAccessToken()}"
+        if (shouldRenew()) {
+            renewToken()
+        }
+
+        return storManager.getToken()?.accessToken
+    }
+
+    fun getRefreshToken(): String? {
+
+        return storManager.getToken()?.refreshToken
+    }
+
+    fun getAuthHeaderStr(): String? {
+
+        if (isRevoked()) {
+            return null
+        }
+
+        if (shouldRenew()) {
+            renewToken()
+        }
+
+        return "Authorization: bearer ${getAccessToken()}"
     }
 
     fun getAuthHeader(): Map<String, String> {
-        return hashMapOf("Authorization" to "bearer ".plus(getRawAccessToken()))
+        return hashMapOf("Authorization" to "bearer ".plus(getAccessToken()))
     }
 
+    @Throws(IllegalStateException::class)
     fun revokeToken() {
 
         if (isRevoked) {
             return
         }
 
+        val token = storManager.getToken()
         if (token != null) {
 
-            val req = RedditAuth.instance()?.getRevokeTokenRequest(token!!)
+            val auth = RedditAuth.instance()
+            val req = auth?.getRevokeTokenRequest(token)
 
             val res = req?.execute() ?: return
             if (res.isSuccessful) {
 
                 // if successful set the token null, clear the one saven on store
-                token = null
                 isRevoked = true
 
-                storManager.deleteToken()
+                storManager.clearAll()
 
                 return
             }
@@ -96,21 +130,26 @@ class TokenBearer(
     }
 
     private fun shouldRenew(): Boolean {
+        val token = storManager.getToken()
         return token?.shouldRenew() ?: false
     }
 
+    @Throws(RefreshTokenMissingException::class, IllegalStateException::class)
     fun renewToken() {
 
         if (isRevoked) {
             return
         }
 
-        if (token?.refreshToken == null) {
-            return
-        }
-
+        val token = storManager.getToken()
         if (token != null) {
-            val req = RedditAuth.instance()?.getRenewTokenRequest(token!!)
+
+            if (token.refreshToken == null) {
+
+                throw RefreshTokenMissingException()
+            }
+
+            val req = RedditAuth.instance()?.getRenewTokenRequest(token)
 
             val res = req?.execute() ?: return
             if (res.isSuccessful) {
@@ -119,10 +158,10 @@ class TokenBearer(
                     ?: IllegalStateException("Response is null!")) as RefreshToken
 
                 // If the request was successful replace the new token
-                token = token!!.generateNewFrom(newRefreshToken)
+                val newToken = token.generateNewFrom(newRefreshToken)
 
                 // and save it the store for the future
-                storManager.saveToken(token!!)
+                storManager.saveToken(newToken, storManager.authType())
 
                 return
             }
