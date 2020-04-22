@@ -1,6 +1,6 @@
 # Android-Reddit-OAuth2
 
-This is a OAuth2 authentication client for the Reddit API built for Android.
+This is a OAuth2 authentication client for the Reddit API built for Android.\
 This library is used as a base for this API wrapper: 
 https://github.com/KirkBushman/ARAW
 
@@ -71,8 +71,9 @@ browser.webViewClient = object : WebViewClient() {
 4) The token bearer is what will help you keep the token updated and make requests, Enjoy.
 
 
+
 ### Userless Flow 
-# For navigating without a user context.
+##### For navigating without a user context.
 
 1) Register your application at: https://www.reddit.com/prefs/apps
 
@@ -102,9 +103,10 @@ bearer = authClient?.getTokenBearer()
 4) Enjoy.
 
 
+
 ### Script Flow
-# Do not use this in your app, do not store the client secret in the Apk or where people can see it.
-# This method is useful for testing purpuses, like a junit testing class for you app.
+##### Do not use this in your app, do not store the client secret in the Apk or where people can see it.
+##### This method is useful for testing purpuses, like a junit testing class for you app.
 
 1) Register your script at: https://www.reddit.com/prefs/apps, make sure that your account is a `developer` for that script.
 
@@ -132,6 +134,8 @@ bearer = authClient?.getTokenBearer()
 ```
 
 4) Enjoy.
+
+
 
 ### Be a good citizen of the web!
 When you are done using any token, rember to revoke them, and not let them around!
