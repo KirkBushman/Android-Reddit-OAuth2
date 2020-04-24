@@ -443,6 +443,10 @@ class RedditAuth private constructor(
         return storManager.isAuthed() && storManager.hasToken()
     }
 
+    fun getSavedBearerType(): AuthType {
+        return storManager.authType()
+    }
+
     fun getSavedBearer(): TokenBearer {
         return TokenBearer(storManager, storManager.getToken(), storManager.authType())
     }
