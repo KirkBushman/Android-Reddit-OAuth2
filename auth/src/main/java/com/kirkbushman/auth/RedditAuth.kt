@@ -4,12 +4,12 @@ import com.kirkbushman.auth.errors.AccessDeniedException
 import com.kirkbushman.auth.errors.InvalidRequestException
 import com.kirkbushman.auth.errors.InvalidScopesException
 import com.kirkbushman.auth.errors.OAuth2Exception
+import com.kirkbushman.auth.errors.RefreshTokenMissingException
 import com.kirkbushman.auth.errors.UnsupportedResponseTypeException
 import com.kirkbushman.auth.http.RedditService
 import com.kirkbushman.auth.managers.StorageManager
 import com.kirkbushman.auth.models.creds.ApplicationCredentials
 import com.kirkbushman.auth.models.AuthType
-import com.kirkbushman.auth.models.RefreshToken
 import com.kirkbushman.auth.models.Scope
 import com.kirkbushman.auth.models.ScopesEnvelope
 import com.kirkbushman.auth.models.creds.ScriptCredentials
@@ -390,14 +390,38 @@ class RedditAuth private constructor(
         return null
     }
 
-    fun getRenewTokenRequest(token: Token): Call<RefreshToken>? {
+    fun getRenewTokenRequest(token: Token): Call<Token>? {
 
-        if (authType == AuthType.INSTALLED_APP) {
+        if (authType == AuthType.INSTALLED_APP && credentials is ApplicationCredentials) {
+
+            if (token.refreshToken == null) {
+
+                throw RefreshTokenMissingException()
+            }
 
             return api.renewToken(
                 header = "${credentials.clientId}:".toHeaderString(),
 
-                refreshToken = token.refreshToken!!
+                refreshToken = token.refreshToken
+            )
+        }
+
+        if (authType == AuthType.USERLESS && credentials is UserlessCredentials) {
+
+            return api.getAccessToken(
+                header = "${credentials.clientId}:".toHeaderString(),
+                grantType = "https://oauth.reddit.com/grants/installed_client",
+                deviceId = Utils.getDeviceUUID()
+            )
+        }
+
+        if (authType == AuthType.SCRIPT && credentials is ScriptCredentials) {
+
+            return api.getAccessToken(
+                header = "${credentials.clientId}:${credentials.clientSecret}".toHeaderString(),
+                grantType = "password",
+                username = credentials.username,
+                password = credentials.password
             )
         }
 
@@ -406,7 +430,7 @@ class RedditAuth private constructor(
 
     fun getRevokeTokenRequest(token: Token): Call<Any>? {
 
-        if (authType == AuthType.INSTALLED_APP) {
+        if (authType == AuthType.INSTALLED_APP && credentials is ApplicationCredentials) {
 
             return api.revoke(
                 header = "${credentials.clientId}:".toHeaderString(),
@@ -416,7 +440,7 @@ class RedditAuth private constructor(
             )
         }
 
-        if (authType == AuthType.USERLESS) {
+        if (authType == AuthType.USERLESS && credentials is UserlessCredentials) {
 
             return api.revoke(
                 header = "${credentials.clientId}:".toHeaderString(),
@@ -426,10 +450,10 @@ class RedditAuth private constructor(
             )
         }
 
-        if (authType == AuthType.SCRIPT) {
+        if (authType == AuthType.SCRIPT && credentials is ScriptCredentials) {
 
             return api.revoke(
-                header = "${(credentials as ScriptCredentials).clientId}:${credentials.clientSecret}".toHeaderString(),
+                header = "${credentials.clientId}:${credentials.clientSecret}".toHeaderString(),
 
                 token = token.accessToken,
                 tokenTypeHint = "access_token"

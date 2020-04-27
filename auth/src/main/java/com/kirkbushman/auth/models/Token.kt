@@ -24,9 +24,10 @@ data class Token(
 
     /**
      * The refresh token is used to get new access tokens, when they expire.
+     * Script and Userless requests do not return one.
      */
     @Json(name = "refresh_token")
-    val refreshToken: String?,
+    val refreshToken: String? = null,
 
     /**
      * The string "bearer"
@@ -68,15 +69,15 @@ data class Token(
         return (currentTimestamp + 300L) >= expirationTime
     }
 
-    fun generateNewFrom(refreshToken: RefreshToken): Token {
+    fun generateNewFrom(oldToken: Token): Token {
 
         return Token(
-            accessToken = refreshToken.accessToken,
+            accessToken = oldToken.accessToken,
             refreshToken = this.refreshToken,
-            tokenType = refreshToken.tokenType,
-            expiresInSecs = refreshToken.expiresInSecs,
-            createdTime = refreshToken.createdTime,
-            scopes = refreshToken.scopes
+            tokenType = oldToken.tokenType,
+            expiresInSecs = oldToken.expiresInSecs,
+            createdTime = oldToken.createdTime,
+            scopes = oldToken.scopes
         )
     }
 }

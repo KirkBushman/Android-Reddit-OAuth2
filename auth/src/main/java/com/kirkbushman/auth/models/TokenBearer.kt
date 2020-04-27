@@ -144,18 +144,13 @@ class TokenBearer(
         val token = storManager.getToken()
         if (token != null) {
 
-            if (token.refreshToken == null) {
-
-                throw RefreshTokenMissingException()
-            }
-
             val req = RedditAuth.instance()?.getRenewTokenRequest(token)
 
             val res = req?.execute() ?: return
             if (res.isSuccessful) {
 
                 val newRefreshToken = (res.body()
-                    ?: IllegalStateException("Response is null!")) as RefreshToken
+                    ?: IllegalStateException("Response is null!")) as Token
 
                 // If the request was successful replace the new token
                 val newToken = token.generateNewFrom(newRefreshToken)

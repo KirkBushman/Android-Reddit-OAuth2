@@ -1,6 +1,5 @@
 package com.kirkbushman.auth.http
 
-import com.kirkbushman.auth.models.RefreshToken
 import com.kirkbushman.auth.models.ScopesEnvelope
 import com.kirkbushman.auth.models.Token
 import retrofit2.Call
@@ -38,7 +37,7 @@ interface RedditService {
 
         @Query("grant_type") grantType: String = "refresh_token",
         @Query("refresh_token") refreshToken: String
-    ): Call<RefreshToken>
+    ): Call<Token>
 
     @POST
     fun revoke(
