@@ -94,5 +94,14 @@ class MainActivity : AppCompatActivity() {
             val intent = Intent(this, TokenInfoActivity::class.java)
             startActivity(intent)
         }
+
+        token_edit_bttn.setOnClickListener {
+
+            val app = TestApplication.instance
+            app.loadClient()
+
+            val intent = Intent(this, TokenEditActivity::class.java)
+            startActivity(intent)
+        }
     }
 }

@@ -55,6 +55,14 @@
                 android:text="@string/bttn_token_info"
                 />
 
+        <com.google.android.material.button.MaterialButton
+                android:id="@+id/token_edit_bttn"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="8dp"
+                android:text="@string/bttn_token_edit"
+                />
+
     </LinearLayout>
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

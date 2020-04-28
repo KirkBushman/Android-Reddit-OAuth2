@@ -134,7 +134,7 @@ class TokenBearer(
         return token?.shouldRenew() ?: false
     }
 
-    @Throws(RefreshTokenMissingException::class, IllegalStateException::class)
+    @Throws(IllegalStateException::class)
     fun renewToken() {
 
         if (isRevoked) {

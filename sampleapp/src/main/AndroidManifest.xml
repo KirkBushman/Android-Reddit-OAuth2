@@ -31,6 +31,8 @@
         </activity>
         <activity android:name=".TokenInfoActivity">
         </activity>
+        <activity android:name=".TokenEditActivity">
+        </activity>
 
     </application>
 
