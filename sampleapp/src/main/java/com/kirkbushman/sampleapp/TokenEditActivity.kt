@@ -41,8 +41,8 @@ class TokenEditActivity : AppCompatActivity() {
             token_edit_access_token.setText(token.accessToken)
             token_edit_refresh_token.setText(token.refreshToken)
             token_info_token_type.text = token.tokenType
-            token_edit_expires_in.setText(token.expirationTime.toString())
             token_edit_created_time.setText(token.createdTime.toString())
+            token_edit_expires_in.setText(token.expiresInSecs.toString())
             token_info_scopes.text = token.scopes
         } else {
 

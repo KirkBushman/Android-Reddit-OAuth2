@@ -3,13 +3,13 @@
 buildscript {
 
     ext {
-        android_gradle_ver  = '3.6.3'
+        android_gradle_ver = '3.6.3'
 
-        compileSdkVer       = 29
-        buildToolsVer       = '29.0.3'
+        compileSdkVer   = 29
+        buildToolsVer   = '29.0.3'
 
-        minSdkVer           = 19
-        compileSdkVer       = 29
+        minSdkVer       = 19
+        compileSdkVer   = 29
 
         kotlin_ver      = '1.3.72'
         ktx_ver         = '1.2.0'

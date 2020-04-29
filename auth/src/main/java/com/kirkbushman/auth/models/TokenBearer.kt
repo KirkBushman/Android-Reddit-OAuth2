@@ -1,7 +1,5 @@
 package com.kirkbushman.auth.models
 
-import com.kirkbushman.auth.RedditAuth
-import com.kirkbushman.auth.errors.RefreshTokenMissingException
 import com.kirkbushman.auth.managers.StorageManager
 
 /**
@@ -24,7 +22,10 @@ class TokenBearer(
      * The type of authentication grant the token derived from:
      * Installed Application, Userless, Script
      */
-    authType: AuthType
+    authType: AuthType,
+
+    private inline val renewToken: (Token) -> Token?,
+    private inline val revokeToken: (Token) -> Boolean
 ) {
 
     private var isRevoked = false
@@ -107,11 +108,8 @@ class TokenBearer(
         val token = storManager.getToken()
         if (token != null) {
 
-            val auth = RedditAuth.instance()
-            val req = auth?.getRevokeTokenRequest(token)
-
-            val res = req?.execute() ?: return
-            if (res.isSuccessful) {
+            val wasSuccessful = revokeToken(token)
+            if (wasSuccessful) {
 
                 // if successful set the token null, clear the one saven on store
                 isRevoked = true
@@ -144,24 +142,20 @@ class TokenBearer(
         val token = storManager.getToken()
         if (token != null) {
 
-            val req = RedditAuth.instance()?.getRenewTokenRequest(token)
+            // If the request was successful replace the new token
+            val newToken = renewToken(token)
+            if (newToken != null) {
 
-            val res = req?.execute() ?: return
-            if (res.isSuccessful) {
-
-                val newRefreshToken = (res.body()
-                    ?: IllegalStateException("Response is null!")) as Token
-
-                // If the request was successful replace the new token
-                val newToken = token.generateNewFrom(newRefreshToken)
+                // add back refresh toke if there is one
+                val newToken2 = token.generateNewFrom(newToken)
 
                 // and save it the store for the future
-                storManager.saveToken(newToken, storManager.authType())
+                storManager.saveToken(newToken2, storManager.authType())
 
                 return
             }
-
-            throw IllegalStateException("Response was unsuccessful while renewing token!")
         }
+
+        throw IllegalStateException("Response was unsuccessful while renewing token!")
     }
 }

@@ -33,13 +33,15 @@ import retrofit2.Retrofit
 @Suppress("unused")
 class RedditAuth private constructor(
 
-    private val retrofit: Retrofit,
+    retrofit: Retrofit,
 
     private val credentials: Credentials,
 
     private val scopes: String,
 
-    private val storManager: StorageManager
+    private val storManager: StorageManager,
+
+    private val logging: Boolean = false
 ) {
 
     companion object {
@@ -50,14 +52,44 @@ class RedditAuth private constructor(
         private val stateRegex = Regex("(?<=(state=))([a-zA-Z0-9]|-|_)+(?=(&|\\s|))")
         private val errorRegex = Regex("(?<=(error=))([a-zA-Z0-9]|-|_)+(?=(&|\\s|))")
 
-        private var instance: RedditAuth? = null
-        fun instance(): RedditAuth? {
-            return instance
+        @Volatile
+        private var retrofit: Retrofit? = null
+        @Volatile
+        private var api: RedditService? = null
+
+        @Synchronized
+        fun setRetrofit(retrofit: Retrofit) {
+            synchronized(this) {
+                this.retrofit = retrofit
+            }
+        }
+
+        @Synchronized
+        fun getRetrofit(logging: Boolean = false): Retrofit {
+            return synchronized(this) {
+
+                if (retrofit == null) {
+                    retrofit = buildRetrofit(BASE_URL, logging)
+                }
+
+                retrofit!!
+            }
+        }
+
+        @Synchronized
+        fun getApi(logging: Boolean = false): RedditService {
+            return synchronized(this) {
+
+                if (api == null) {
+                    api = getRetrofit(logging).create(RedditService::class.java)
+                }
+
+                api!!
+            }
         }
 
         fun getScopes(logging: Boolean = false): ScopesEnvelope? {
-            val retrofit = buildRetrofit(BASE_URL, logging)
-            val api = retrofit.create(RedditService::class.java)
+            val api = getApi(logging)
 
             val req = api.getScopes()
             val res = req.execute()
@@ -68,9 +100,98 @@ class RedditAuth private constructor(
                 throw Exception(res.errorBody().toString())
             }
         }
-    }
 
-    private val api: RedditService by lazy { retrofit.create(RedditService::class.java) }
+        fun renewTokenReq(
+
+            token: Token,
+            authType: AuthType,
+            credentials: Credentials,
+            logging: Boolean = false
+        ): Call<Token>? {
+
+            if (authType == AuthType.INSTALLED_APP && credentials is ApplicationCredentials) {
+
+                if (token.refreshToken == null) {
+
+                    throw RefreshTokenMissingException()
+                }
+
+                val api = getApi(logging)
+                return api.renewToken(
+                    header = "${credentials.clientId}:".toHeaderString(),
+
+                    refreshToken = token.refreshToken
+                )
+            }
+
+            if (authType == AuthType.USERLESS && credentials is UserlessCredentials) {
+
+                val api = getApi(logging)
+                return api.getAccessToken(
+                    header = "${credentials.clientId}:".toHeaderString(),
+                    grantType = "https://oauth.reddit.com/grants/installed_client",
+                    deviceId = Utils.getDeviceUUID()
+                )
+            }
+
+            if (authType == AuthType.SCRIPT && credentials is ScriptCredentials) {
+
+                val api = getApi(logging)
+                return api.getAccessToken(
+                    header = "${credentials.clientId}:${credentials.clientSecret}".toHeaderString(),
+                    grantType = "password",
+                    username = credentials.username,
+                    password = credentials.password
+                )
+            }
+
+            return null
+        }
+
+        fun revokeToken(
+
+            token: Token,
+            authType: AuthType,
+            credentials: Credentials,
+            logging: Boolean = false
+        ): Call<Any>? {
+
+            if (authType == AuthType.INSTALLED_APP && credentials is ApplicationCredentials) {
+
+                val api = getApi(logging)
+                return api.revoke(
+                    header = "${credentials.clientId}:".toHeaderString(),
+
+                    token = token.refreshToken!!,
+                    tokenTypeHint = "refresh_token"
+                )
+            }
+
+            if (authType == AuthType.USERLESS && credentials is UserlessCredentials) {
+
+                val api = getApi(logging)
+                return api.revoke(
+                    header = "${credentials.clientId}:".toHeaderString(),
+
+                    token = token.accessToken,
+                    tokenTypeHint = "access_token"
+                )
+            }
+
+            if (authType == AuthType.SCRIPT && credentials is ScriptCredentials) {
+
+                val api = getApi(logging)
+                return api.revoke(
+                    header = "${credentials.clientId}:${credentials.clientSecret}".toHeaderString(),
+
+                    token = token.accessToken,
+                    tokenTypeHint = "access_token"
+                )
+            }
+
+            return null
+        }
+    }
 
     private val authType: AuthType = when (credentials) {
         is ApplicationCredentials -> AuthType.INSTALLED_APP
@@ -120,9 +241,11 @@ class RedditAuth private constructor(
          * Can be extended using the method you prefer, this lib provides a working
          * example with SharedPreferences
          */
-        storManager: StorageManager
+        storManager: StorageManager,
 
-    ) : this (retrofit, credentials, scopes, storManager) {
+        logging: Boolean
+
+    ) : this (retrofit, credentials, scopes, storManager, logging) {
 
         this.state = state
     }
@@ -159,9 +282,11 @@ class RedditAuth private constructor(
          * Can be extended using the method you prefer, this lib provides a working
          * example with SharedPreferences
          */
-        storManager: StorageManager
+        storManager: StorageManager,
 
-    ) : this (retrofit, credentials as Credentials, scopes, storManager)
+        logging: Boolean
+
+    ) : this (retrofit, credentials as Credentials, scopes, storManager, logging)
 
     // Script App Authentication
     constructor(
@@ -199,16 +324,53 @@ class RedditAuth private constructor(
          * Can be extended using the method you prefer, this lib provides a working
          * example with SharedPreferences
          */
-        storManager: StorageManager
+        storManager: StorageManager,
 
-    ) : this (retrofit, credentials as Credentials, scopes, storManager)
+        logging: Boolean
+
+    ) : this (retrofit, credentials as Credentials, scopes, storManager, logging)
+
+    init {
+        ::setRetrofit.invoke(retrofit)
+    }
+
+    private val renewToken: (Token) -> Token? = { token: Token ->
+
+        try {
+
+            val req = renewTokenReq(token, authType, credentials, logging)
+            val res = req?.execute()
+
+            if (res?.isSuccessful == true) {
+
+                res.body()
+            } else {
+                null
+            }
+        } catch (ex: Exception) {
+            ex.printStackTrace()
+
+            null
+        }
+    }
+
+    private val revokeToken: (Token) -> Boolean = { token: Token ->
+
+        try {
+
+            val req = renewTokenReq(token, authType, credentials, logging)
+            val res = req?.execute()
+
+            res?.isSuccessful == true
+        } catch (ex: Exception) {
+            ex.printStackTrace()
+
+            false
+        }
+    }
 
     fun getAuthType(): AuthType {
         return authType
-    }
-
-    init {
-        instance = this
     }
 
     fun provideAuthorizeUrl(): String {
@@ -254,6 +416,7 @@ class RedditAuth private constructor(
 
             try {
 
+                val api = getApi(logging)
                 val req = api.getAccessToken(
                     header = "${credentials.clientId}:${credentials.clientSecret}".toHeaderString(),
                     grantType = "password",
@@ -265,7 +428,13 @@ class RedditAuth private constructor(
 
                 return if (res.isSuccessful) {
                     val token = res.body() as Token
-                    TokenBearer(storManager, token, AuthType.SCRIPT)
+                    TokenBearer(
+                        storManager = storManager,
+                        token = token,
+                        authType = AuthType.SCRIPT,
+                        renewToken = renewToken,
+                        revokeToken = revokeToken
+                    )
                 } else {
                     null
                 }
@@ -280,6 +449,7 @@ class RedditAuth private constructor(
 
             try {
 
+                val api = getApi(logging)
                 val req = api.getAccessToken(
                     header = "${credentials.clientId}:".toHeaderString(),
                     grantType = "https://oauth.reddit.com/grants/installed_client",
@@ -290,7 +460,13 @@ class RedditAuth private constructor(
 
                 return if (res.isSuccessful) {
                     val token = res.body() as Token
-                    TokenBearer(storManager, token, AuthType.USERLESS)
+                    TokenBearer(
+                        storManager = storManager,
+                        token = token,
+                        authType = AuthType.USERLESS,
+                        renewToken = renewToken,
+                        revokeToken = revokeToken
+                    )
                 } else {
                     null
                 }
@@ -365,6 +541,7 @@ class RedditAuth private constructor(
 
             try {
 
+                val api = getApi(logging)
                 val req = api.getAccessToken(
                     header = "${credentials.clientId}:".toHeaderString(),
                     grantType = "authorization_code",
@@ -376,7 +553,13 @@ class RedditAuth private constructor(
 
                 return if (res.isSuccessful) {
                     val token = res.body() as Token
-                    TokenBearer(storManager, token, AuthType.INSTALLED_APP)
+                    TokenBearer(
+                        storManager = storManager,
+                        token = token,
+                        authType = AuthType.INSTALLED_APP,
+                        renewToken = renewToken,
+                        revokeToken = revokeToken
+                    )
                 } else {
                     null
                 }
@@ -385,79 +568,6 @@ class RedditAuth private constructor(
 
                 return null
             }
-        }
-
-        return null
-    }
-
-    fun getRenewTokenRequest(token: Token): Call<Token>? {
-
-        if (authType == AuthType.INSTALLED_APP && credentials is ApplicationCredentials) {
-
-            if (token.refreshToken == null) {
-
-                throw RefreshTokenMissingException()
-            }
-
-            return api.renewToken(
-                header = "${credentials.clientId}:".toHeaderString(),
-
-                refreshToken = token.refreshToken
-            )
-        }
-
-        if (authType == AuthType.USERLESS && credentials is UserlessCredentials) {
-
-            return api.getAccessToken(
-                header = "${credentials.clientId}:".toHeaderString(),
-                grantType = "https://oauth.reddit.com/grants/installed_client",
-                deviceId = Utils.getDeviceUUID()
-            )
-        }
-
-        if (authType == AuthType.SCRIPT && credentials is ScriptCredentials) {
-
-            return api.getAccessToken(
-                header = "${credentials.clientId}:${credentials.clientSecret}".toHeaderString(),
-                grantType = "password",
-                username = credentials.username,
-                password = credentials.password
-            )
-        }
-
-        return null
-    }
-
-    fun getRevokeTokenRequest(token: Token): Call<Any>? {
-
-        if (authType == AuthType.INSTALLED_APP && credentials is ApplicationCredentials) {
-
-            return api.revoke(
-                header = "${credentials.clientId}:".toHeaderString(),
-
-                token = token.refreshToken!!,
-                tokenTypeHint = "refresh_token"
-            )
-        }
-
-        if (authType == AuthType.USERLESS && credentials is UserlessCredentials) {
-
-            return api.revoke(
-                header = "${credentials.clientId}:".toHeaderString(),
-
-                token = token.accessToken,
-                tokenTypeHint = "access_token"
-            )
-        }
-
-        if (authType == AuthType.SCRIPT && credentials is ScriptCredentials) {
-
-            return api.revoke(
-                header = "${credentials.clientId}:${credentials.clientSecret}".toHeaderString(),
-
-                token = token.accessToken,
-                tokenTypeHint = "access_token"
-            )
         }
 
         return null
@@ -472,7 +582,13 @@ class RedditAuth private constructor(
     }
 
     fun getSavedBearer(): TokenBearer {
-        return TokenBearer(storManager, storManager.getToken(), storManager.authType())
+        return TokenBearer(
+            storManager = storManager,
+            token = storManager.getToken(),
+            authType = storManager.authType(),
+            renewToken = renewToken,
+            revokeToken = revokeToken
+        )
     }
 
     abstract class AuthBuilder {
@@ -659,7 +775,8 @@ class RedditAuth private constructor(
                 state = state,
                 scopes = scopes,
                 storManager = storManager
-                    ?: throw IllegalArgumentException("StorageManager must not be null!")
+                    ?: throw IllegalArgumentException("StorageManager must not be null!"),
+                logging = logging
             )
         }
     }
@@ -701,7 +818,8 @@ class RedditAuth private constructor(
                 credentials = credentials,
                 scopes = scopes,
                 storManager = storManager
-                    ?: throw IllegalArgumentException("StorageManager must not be null!")
+                    ?: throw IllegalArgumentException("StorageManager must not be null!"),
+                logging = logging
             )
         }
     }
@@ -743,7 +861,8 @@ class RedditAuth private constructor(
                 credentials = credentials,
                 scopes = scopes,
                 storManager = storManager
-                    ?: throw IllegalArgumentException("StorageManager must not be null!")
+                    ?: throw IllegalArgumentException("StorageManager must not be null!"),
+                logging = logging
             )
         }
     }
