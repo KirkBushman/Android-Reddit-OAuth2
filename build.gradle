@@ -17,7 +17,7 @@ buildscript {
         mdc_ver         = '1.1.0'
         retrofit_ver    = '2.8.1'
         moshi_ver       = '1.9.2'
-        okhttp_ver      = '4.5.0'
+        okhttp_ver      = '4.6.0'
     }
 
     repositories {
