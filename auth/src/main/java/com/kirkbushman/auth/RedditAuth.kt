@@ -148,7 +148,7 @@ class RedditAuth private constructor(
             return null
         }
 
-        fun revokeToken(
+        fun revokeTokenReq(
 
             token: Token,
             authType: AuthType,
@@ -358,7 +358,7 @@ class RedditAuth private constructor(
 
         try {
 
-            val req = renewTokenReq(token, authType, credentials, logging)
+            val req = revokeTokenReq(token, authType, credentials, logging)
             val res = req?.execute()
 
             res?.isSuccessful == true
