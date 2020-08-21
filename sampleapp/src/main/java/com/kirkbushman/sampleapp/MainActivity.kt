@@ -42,18 +42,20 @@ class MainActivity : AppCompatActivity() {
 
                 var bearer: TokenBearer? = null
 
-                DoAsync(doWork = {
+                doAsync(
+                    doWork = {
+                        bearer = authClient?.getTokenBearer()
+                    },
+                    onPost = {
 
-                    bearer = authClient?.getTokenBearer()
-                }, onPost = {
+                        if (bearer != null) {
+                            app.setBearer(bearer!!)
+                        }
 
-                    if (bearer != null) {
-                        app.setBearer(bearer!!)
+                        val intent = Intent(this, TokenInfoActivity::class.java)
+                        startActivity(intent)
                     }
-
-                    val intent = Intent(this, TokenInfoActivity::class.java)
-                    startActivity(intent)
-                })
+                )
             }
         }
 
@@ -71,18 +73,20 @@ class MainActivity : AppCompatActivity() {
 
                 var bearer: TokenBearer? = null
 
-                DoAsync(doWork = {
+                doAsync(
+                    doWork = {
+                        bearer = authClient?.getTokenBearer()
+                    },
+                    onPost = {
 
-                    bearer = authClient?.getTokenBearer()
-                }, onPost = {
+                        if (bearer != null) {
+                            app.setBearer(bearer!!)
+                        }
 
-                    if (bearer != null) {
-                        app.setBearer(bearer!!)
+                        val intent = Intent(this, TokenInfoActivity::class.java)
+                        startActivity(intent)
                     }
-
-                    val intent = Intent(this, TokenInfoActivity::class.java)
-                    startActivity(intent)
-                })
+                )
             }
         }
 

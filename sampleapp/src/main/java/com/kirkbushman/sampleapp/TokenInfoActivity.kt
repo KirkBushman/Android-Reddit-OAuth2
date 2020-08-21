@@ -64,28 +64,31 @@ class TokenInfoActivity : AppCompatActivity() {
 
                 var exception: Exception? = null
 
-                DoAsync(doWork = {
+                doAsync(
+                    doWork = {
 
-                    try {
-                        bearer!!.renewToken()
-                    } catch (ex: Exception) {
-                        exception = ex
+                        try {
+                            bearer!!.renewToken()
+                        } catch (ex: Exception) {
+                            exception = ex
+                        }
+                    },
+                    onPost = {
+
+                        val message = if (exception != null) {
+
+                            "A problem occured while refreshing the token, with exception: ${exception!!.message}"
+                        } else {
+                            val now = SimpleDateFormat("dd-MM-yyyy HH:mm", Locale.getDefault()).format(Date())
+
+                            "${bearer!!.getAccessToken()}, Refreshed $now"
+                        }
+
+                        bindToken(bearer, message)
+
+                        Toast.makeText(this, "Token refreshed successfully", Toast.LENGTH_LONG).show()
                     }
-                }, onPost = {
-
-                    val message = if (exception != null) {
-
-                        "A problem occured while refreshing the token, with exception: ${exception!!.message}"
-                    } else {
-                        val now = SimpleDateFormat("dd-MM-yyyy HH:mm", Locale.getDefault()).format(Date())
-
-                        "${bearer!!.getAccessToken()}, Refreshed $now"
-                    }
-
-                    bindToken(bearer, message)
-
-                    Toast.makeText(this, "Token refreshed successfully", Toast.LENGTH_LONG).show()
-                })
+                )
             }
 
             return true
@@ -98,28 +101,31 @@ class TokenInfoActivity : AppCompatActivity() {
                 revokedErrorDialog.show()
             } else {
 
-                DoAsync(doWork = {
+                doAsync(
+                    doWork = {
 
-                    try {
-                        bearer!!.revokeToken()
-                    } catch (ex: Exception) {
-                        exception = ex
+                        try {
+                            bearer!!.revokeToken()
+                        } catch (ex: Exception) {
+                            exception = ex
+                        }
+                    },
+                    onPost = {
+
+                        val message = if (exception != null) {
+
+                            "A problem has occurred while revoking the token, with message: ${exception!!.message}"
+                        } else {
+                            val now = SimpleDateFormat("dd-MM-yyyy HH:mm", Locale.getDefault()).format(Date())
+
+                            "Token was revoked $now"
+                        }
+
+                        bindToken(bearer, message)
+
+                        Toast.makeText(this, "Token revoked successfully", Toast.LENGTH_LONG).show()
                     }
-                }, onPost = {
-
-                    val message = if (exception != null) {
-
-                        "A problem has occurred while revoking the token, with message: ${exception!!.message}"
-                    } else {
-                        val now = SimpleDateFormat("dd-MM-yyyy HH:mm", Locale.getDefault()).format(Date())
-
-                        "Token was revoked $now"
-                    }
-
-                    bindToken(bearer, message)
-
-                    Toast.makeText(this, "Token revoked successfully", Toast.LENGTH_LONG).show()
-                })
+                )
             }
 
             return true

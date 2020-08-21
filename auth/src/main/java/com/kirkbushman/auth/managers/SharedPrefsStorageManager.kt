@@ -38,19 +38,20 @@ class SharedPrefsStorageManager(context: Context) : StorageManager {
 
     override fun hasToken(): Boolean {
         return prefs.contains(LAST_ACCESS_TOKEN) &&
-                prefs.contains(LAST_TOKEN_TYPE) &&
-                prefs.contains(LAST_EXPIRES_IN) &&
-                prefs.contains(LAST_CREATED_TIME) &&
-                prefs.contains(LAST_SCOPES)
+            prefs.contains(LAST_TOKEN_TYPE) &&
+            prefs.contains(LAST_EXPIRES_IN) &&
+            prefs.contains(LAST_CREATED_TIME) &&
+            prefs.contains(LAST_SCOPES)
     }
 
     override fun getToken(): Token {
-        if (!prefs.contains(LAST_ACCESS_TOKEN) ||
+        if (
+            !prefs.contains(LAST_ACCESS_TOKEN) ||
             !prefs.contains(LAST_TOKEN_TYPE) ||
             !prefs.contains(LAST_EXPIRES_IN) ||
             !prefs.contains(LAST_CREATED_TIME) ||
-            !prefs.contains(LAST_SCOPES)) {
-
+            !prefs.contains(LAST_SCOPES)
+        ) {
             throw IllegalStateException("Token not found in store! did you ever saved one?")
         }
 

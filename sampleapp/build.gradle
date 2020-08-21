@@ -40,9 +40,8 @@ android {
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
 
-    testImplementation 'junit:junit:4.13'
-
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_ver"
+    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:$coroutines_ver"
 
     implementation project(':auth')
 
@@ -50,6 +49,10 @@ dependencies {
 
     implementation "com.google.android.material:material:$mdc_ver"
     implementation "androidx.core:core-ktx:$ktx_ver"
-    implementation 'androidx.appcompat:appcompat:1.2.0-beta01'
+    implementation 'androidx.appcompat:appcompat:1.2.0'
     implementation 'androidx.browser:browser:1.2.0'
+
+    debugImplementation "com.squareup.leakcanary:leakcanary-android:$leakcanary_ver"
+
+    testImplementation 'junit:junit:4.13'
 }

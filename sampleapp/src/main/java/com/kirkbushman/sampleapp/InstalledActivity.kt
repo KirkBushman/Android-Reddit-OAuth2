@@ -39,18 +39,20 @@ class InstalledActivity : AppCompatActivity() {
                     if (authClient!!.isRedirectedUrl(url)) {
                         browser.stopLoading()
 
-                        DoAsync(doWork = {
+                        doAsync(
+                            doWork = {
 
-                            Log.i("Response URL", url)
+                                Log.i("Response URL", url)
 
-                            val bearer = authClient.getTokenBearer(url)
-                            Log.i("SUCCESS", bearer?.toString() ?: "The bearer is null")
+                                val bearer = authClient.getTokenBearer(url)
+                                Log.i("SUCCESS", bearer?.toString() ?: "The bearer is null")
 
-                            app.setBearer(bearer!!)
+                                app.setBearer(bearer!!)
 
-                            val intent = Intent(this@InstalledActivity, TokenInfoActivity::class.java)
-                            startActivity(intent)
-                        })
+                                val intent = Intent(this@InstalledActivity, TokenInfoActivity::class.java)
+                                startActivity(intent)
+                            }
+                        )
                     }
                 }
             }
