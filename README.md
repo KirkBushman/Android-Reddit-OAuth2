@@ -7,7 +7,7 @@ https://github.com/KirkBushman/ARAW
 
 ### How to install.
 
-```
+```groovy
 allprojects {
     repositories {
         ...
@@ -31,8 +31,8 @@ dependencies {
 2) Create the manager object that is responsible for the initial interaction with the browser and the retrieval of the token.
 The clientId and redirectUrl should match what you wrote on the reddit api console, for more info refer to this: https://github.com/reddit-archive/reddit/wiki/oauth2
 
-```
-val manager = RedditAuth.Builder()
+```kotlin
+val authClient = RedditAuth.Builder()
             // specify the credentials you can find on your reddit app console
             .setApplicationCredentials(creds.clientId, creds.redirectUrl)
             // the api enpoints scopes this client will need
@@ -50,7 +50,9 @@ The manager object we built in step 1 will provide the url: ```browser.loadUrl(a
 
 3) We'll be watching for any redirects, so implement a webViewClient like this:
 
-```
+```kotlin
+val browser = WebView(context)
+
 browser.webViewClient = object : WebViewClient() {
   override fun onPageStarted(view: WebView, url: String, favicon: Bitmap?) {
   
@@ -79,8 +81,8 @@ browser.webViewClient = object : WebViewClient() {
 
 2) Create the auth manager object like so:
 
-```
-val manager = RedditAuth.Builder()
+```kotlin
+val authClient = RedditAuth.Builder()
                     // specify the credentials you can find on your reddit app console, 
                     // in this case only the client id is provided.
                     .setUserlessCredentials(creds.clientId)
@@ -96,7 +98,7 @@ val manager = RedditAuth.Builder()
 
 3) Simply use this code, to get your token bearer:
 
-```
+```kotlin
 bearer = authClient?.getTokenBearer()
 ```
 
@@ -112,8 +114,8 @@ bearer = authClient?.getTokenBearer()
 
 2) Create the auth manager object like so:
 
-```
-val manager = RedditAuth.Builder()
+```kotlin
+val authClient = RedditAuth.Builder()
                 // specify the credentials you can find on your reddit app console
                 // for script / web apps you will be given a client id and a client secret
                 .setCredentials(creds.username, creds.password, creds.scriptClientId, creds.scriptClientSecret)
@@ -129,7 +131,7 @@ val manager = RedditAuth.Builder()
 
 3) Simply use this code, to get your token bearer:
 
-```
+```kotlin
 bearer = authClient?.getTokenBearer()
 ```
 
