@@ -3,7 +3,7 @@
 buildscript {
 
     ext {
-        android_gradle_ver = '4.0.1'
+        android_gradle_ver = '4.1.0'
 
         compileSdkVer   = 30
         buildToolsVer   = '30.0.2'
@@ -11,16 +11,20 @@ buildscript {
         minSdkVer       = 19
         compileSdkVer   = 30
 
-        kotlin_ver      = '1.4.0'
+        kotlin_ver      = '1.4.10'
         coroutines_ver  = '1.3.9'
-        ktx_ver         = '1.3.1'
-        ktlint_ver      = '0.37.2'
-        mdc_ver         = '1.2.0'
+        ktx_ver         = '1.3.2'
+        ktlint_ver      = '0.39.0'
+        mdc_ver         = '1.2.1'
         retrofit_ver    = '2.9.0'
-        moshi_ver       = '1.9.3'
-        okhttp_ver      = '4.8.1'
+        moshi_ver       = '1.11.0'
+        okhttp_ver      = '4.9.0'
 
-        leakcanary_ver = '2.4'
+        test_ver       = '1.3.0'
+        espresso_ver   = '3.3.0'
+        junit_ver      = '1.1.2'
+        mockito_ver    = '3.5.13'
+        leakcanary_ver = '2.5'
     }
 
     repositories {
@@ -29,6 +33,7 @@ buildscript {
         mavenCentral()
     }
     dependencies {
+
         classpath "com.android.tools.build:gradle:$android_gradle_ver"
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_ver"
     }
