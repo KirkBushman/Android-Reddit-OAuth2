@@ -46,5 +46,5 @@ interface RedditService {
 
         @Query("token") token: String,
         @Query("token_type_hint") tokenTypeHint: String
-    ): Call<Any>
+    ): Call<Unit>
 }

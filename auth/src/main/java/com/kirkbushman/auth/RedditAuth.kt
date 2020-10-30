@@ -154,7 +154,7 @@ class RedditAuth private constructor(
             authType: AuthType,
             credentials: Credentials,
             logging: Boolean = false
-        ): Call<Any>? {
+        ): Call<Unit>? {
 
             if (authType == AuthType.INSTALLED_APP && credentials is ApplicationCredentials) {
 
