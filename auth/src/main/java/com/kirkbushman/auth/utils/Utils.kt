@@ -1,6 +1,8 @@
 package com.kirkbushman.auth.utils
 
 import android.util.Base64
+import com.kirkbushman.auth.http.RedditAuthClient
+import com.kirkbushman.auth.http.RedditAuthService
 import com.kirkbushman.auth.models.Scope
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
@@ -10,6 +12,8 @@ import java.util.*
 import kotlin.collections.HashMap
 
 object Utils {
+
+    const val BASE_URL = "https://www.reddit.com"
 
     private val STRING_CHARACTERS = ('0'..'9').plus('a'..'z').toTypedArray()
 
@@ -25,15 +29,47 @@ object Utils {
         return UUID.randomUUID().toString()
     }
 
-    fun buildRetrofit(baseUrl: String, logging: Boolean): Retrofit {
+    fun buildDefaultClient(retrofit: Retrofit?, logging: Boolean): RedditAuthClient {
+
+        val retrofitVal =
+            if (retrofit != null) {
+                retrofit
+            } else {
+
+                val httpClient = buildOkHttpClient(logging)
+                buildRetrofit(BASE_URL, httpClient)
+            }
+
+        val api = buildApi(retrofitVal)
+        return buildClient(api)
+    }
+
+    fun buildClient(api: RedditAuthService): RedditAuthClient {
+
+        return RedditAuthClient(api)
+    }
+
+    fun buildApi(retrofit: Retrofit): RedditAuthService {
+
+        return retrofit.create(RedditAuthService::class.java)
+    }
+
+    fun buildDefaultRetrofit(baseUrl: String, logging: Boolean): Retrofit {
+
+        val httpClient = buildOkHttpClient(logging)
+        return buildRetrofit(baseUrl, httpClient)
+    }
+
+    fun buildRetrofit(baseUrl: String, client: OkHttpClient): Retrofit {
+
         return Retrofit.Builder()
             .baseUrl(baseUrl)
             .addConverterFactory(MoshiConverterFactory.create())
-            .client(getOkHttpClient(logging))
+            .client(client)
             .build()
     }
 
-    private fun getOkHttpClient(logging: Boolean): OkHttpClient {
+    private fun buildOkHttpClient(logging: Boolean): OkHttpClient {
         return if (logging) {
 
             val logger = HttpLoggingInterceptor()

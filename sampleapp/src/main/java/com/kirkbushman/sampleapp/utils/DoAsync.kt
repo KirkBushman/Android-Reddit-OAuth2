@@ -1,4 +1,4 @@
-package com.kirkbushman.sampleapp
+package com.kirkbushman.sampleapp.utils
 
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -7,7 +7,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import kotlin.coroutines.CoroutineContext
 
-class doAsync(
+class DoAsync(
 
     private val doWork: () -> Unit,
     private val onPre: (() -> Unit)? = null,

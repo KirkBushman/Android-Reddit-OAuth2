@@ -2,6 +2,7 @@ apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
 apply plugin: 'kotlin-kapt'
+apply plugin: 'dagger.hilt.android.plugin'
 
 android {
     compileSdkVersion compileSdkVer
@@ -51,6 +52,11 @@ dependencies {
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:$coroutines_ver"
 
     implementation project(':auth')
+
+    implementation "com.google.dagger:hilt-android:$hilt_ver"
+    implementation "androidx.hilt:hilt-lifecycle-viewmodel:$ax_hilt_ver"
+    kapt "androidx.hilt:hilt-compiler:$ax_hilt_ver"
+    kapt "com.google.dagger:hilt-android-compiler:$hilt_ver"
 
     implementation "com.squareup.retrofit2:retrofit:$retrofit_ver"
 

@@ -1,4 +1,4 @@
-package com.kirkbushman.sampleapp
+package com.kirkbushman.sampleapp.activities
 
 import android.content.Intent
 import android.graphics.Bitmap
@@ -7,9 +7,18 @@ import android.util.Log
 import android.webkit.WebView
 import android.webkit.WebViewClient
 import androidx.appcompat.app.AppCompatActivity
+import com.kirkbushman.auth.AppAuth
+import com.kirkbushman.sampleapp.R
+import com.kirkbushman.sampleapp.utils.DoAsync
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.android.synthetic.main.activity_installed.*
+import javax.inject.Inject
 
+@AndroidEntryPoint
 class InstalledActivity : AppCompatActivity() {
+
+    @Inject
+    lateinit var appAuth: AppAuth
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -21,13 +30,7 @@ class InstalledActivity : AppCompatActivity() {
             it.setDisplayShowHomeEnabled(true)
         }
 
-        val app = TestApplication.instance
-        val authClient = app.authClient
-
-        if (authClient != null && authClient.hasSavedBearer()) {
-
-            val bearer = authClient.getSavedBearer()
-            app.setBearer(bearer)
+        if (appAuth.hasSavedBearer()) {
 
             val intent = Intent(this, TokenInfoActivity::class.java)
             startActivity(intent)
@@ -36,18 +39,16 @@ class InstalledActivity : AppCompatActivity() {
             browser.webViewClient = object : WebViewClient() {
                 override fun onPageStarted(view: WebView, url: String, favicon: Bitmap?) {
 
-                    if (authClient!!.isRedirectedUrl(url)) {
+                    if (appAuth.isRedirectedUrl(url)) {
                         browser.stopLoading()
 
-                        doAsync(
+                        DoAsync(
                             doWork = {
 
                                 Log.i("Response URL", url)
 
-                                val bearer = authClient.getTokenBearer(url)
+                                val bearer = appAuth.authenticate(url)
                                 Log.i("SUCCESS", bearer?.toString() ?: "The bearer is null")
-
-                                app.setBearer(bearer!!)
 
                                 val intent = Intent(this@InstalledActivity, TokenInfoActivity::class.java)
                                 startActivity(intent)
@@ -58,7 +59,7 @@ class InstalledActivity : AppCompatActivity() {
             }
 
             browser.clearFormData()
-            browser.loadUrl(authClient!!.provideAuthorizeUrl())
+            browser.loadUrl(appAuth.provideAuthorizeUrl())
         }
     }
 

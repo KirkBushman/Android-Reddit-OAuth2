@@ -1,4 +1,4 @@
-package com.kirkbushman.auth.models
+package com.kirkbushman.auth.models.enums
 
 enum class AuthType {
 

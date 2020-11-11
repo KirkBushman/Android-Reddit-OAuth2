@@ -1,4 +1,4 @@
-package com.kirkbushman.sampleapp
+package com.kirkbushman.sampleapp.module
 
 data class TestCredentials(
     val clientId: String,

@@ -16,7 +16,7 @@
             tools:ignore="AllowBackup,GoogleAppIndexingWarning">
 
         <activity
-                android:name=".MainActivity"
+                android:name=".activities.MainActivity"
                 android:label="@string/app_name">
 
             <intent-filter>
@@ -27,11 +27,9 @@
             </intent-filter>
         </activity>
 
-        <activity android:name=".InstalledActivity">
+        <activity android:name=".activities.InstalledActivity">
         </activity>
-        <activity android:name=".TokenInfoActivity">
-        </activity>
-        <activity android:name=".TokenEditActivity">
+        <activity android:name=".activities.TokenInfoActivity">
         </activity>
 
     </application>

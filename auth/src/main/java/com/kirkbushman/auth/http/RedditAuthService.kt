@@ -2,6 +2,7 @@ package com.kirkbushman.auth.http
 
 import com.kirkbushman.auth.models.ScopesEnvelope
 import com.kirkbushman.auth.models.Token
+import okhttp3.ResponseBody
 import retrofit2.Call
 import retrofit2.http.GET
 import retrofit2.http.HeaderMap
@@ -9,7 +10,7 @@ import retrofit2.http.POST
 import retrofit2.http.Query
 import retrofit2.http.Url
 
-interface RedditService {
+interface RedditAuthService {
 
     @GET
     fun getScopes(
@@ -46,5 +47,5 @@ interface RedditService {
 
         @Query("token") token: String,
         @Query("token_type_hint") tokenTypeHint: String
-    ): Call<Unit>
+    ): Call<ResponseBody>
 }

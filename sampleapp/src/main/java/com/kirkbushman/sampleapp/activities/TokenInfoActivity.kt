@@ -1,4 +1,4 @@
-package com.kirkbushman.sampleapp
+package com.kirkbushman.sampleapp.activities
 
 import android.os.Bundle
 import android.view.Menu
@@ -7,16 +7,36 @@ import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
-import com.kirkbushman.auth.models.TokenBearer
+import com.kirkbushman.auth.RedditAuth
+import com.kirkbushman.auth.managers.SharedPrefsStorageManager
+import com.kirkbushman.auth.models.bearers.TokenBearer
+import com.kirkbushman.auth.models.creds.ApplicationCredentials
+import com.kirkbushman.auth.models.creds.ScriptCredentials
+import com.kirkbushman.auth.models.creds.UserlessCredentials
+import com.kirkbushman.auth.models.enums.AuthType
+import com.kirkbushman.auth.utils.Utils
+import com.kirkbushman.sampleapp.R
+import com.kirkbushman.sampleapp.module.TestCredentials
+import com.kirkbushman.sampleapp.utils.DoAsync
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.android.synthetic.main.activity_info.*
 import java.text.SimpleDateFormat
 import java.util.*
+import javax.inject.Inject
 import kotlin.Exception
 
+@AndroidEntryPoint
 class TokenInfoActivity : AppCompatActivity() {
 
-    private val bearer by lazy { TestApplication.instance.getBearer() }
+    @Inject
+    lateinit var credentials: TestCredentials
+    @Inject
+    lateinit var prefs: SharedPrefsStorageManager
+
+    private var bearer: TokenBearer? = null
+
     private val revokedErrorDialog by lazy {
+
         MaterialAlertDialogBuilder(this)
             .setTitle("Action not available!")
             .setMessage("The token was revoked, and no action can be done upon it anymore.")
@@ -34,6 +54,45 @@ class TokenInfoActivity : AppCompatActivity() {
             it.setDisplayShowHomeEnabled(true)
             it.setDisplayHomeAsUpEnabled(true)
         }
+
+        RedditAuth
+            .Saved(prefs)
+            .retrieve(
+                provideCredentials = {
+
+                    when (it) {
+
+                        AuthType.INSTALLED_APP ->
+                            ApplicationCredentials(
+                                clientId = credentials.clientId,
+                                redirectUrl = credentials.redirectUrl
+                            )
+
+                        AuthType.USERLESS ->
+                            UserlessCredentials(
+                                clientId = credentials.clientId,
+                                deviceId = Utils.getDeviceUUID()
+                            )
+
+                        AuthType.SCRIPT ->
+                            ScriptCredentials(
+                                clientId = credentials.scriptClientId,
+                                clientSecret = credentials.scriptClientSecret,
+                                username = credentials.username,
+                                password = credentials.password
+                            )
+
+                        else -> null
+                    }
+                },
+                onFound = { _, bearer ->
+
+                    this.bearer = bearer
+                },
+                onMiss = {
+                    bearer = null
+                }
+            )
 
         bindToken(bearer)
     }
@@ -64,7 +123,7 @@ class TokenInfoActivity : AppCompatActivity() {
 
                 var exception: Exception? = null
 
-                doAsync(
+                DoAsync(
                     doWork = {
 
                         try {
@@ -101,7 +160,7 @@ class TokenInfoActivity : AppCompatActivity() {
                 revokedErrorDialog.show()
             } else {
 
-                doAsync(
+                DoAsync(
                     doWork = {
 
                         try {

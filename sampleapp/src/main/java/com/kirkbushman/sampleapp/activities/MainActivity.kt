@@ -1,13 +1,23 @@
-package com.kirkbushman.sampleapp
+package com.kirkbushman.sampleapp.activities
 
 import android.content.Intent
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
-import com.kirkbushman.auth.models.AuthType
-import com.kirkbushman.auth.models.TokenBearer
+import com.kirkbushman.auth.ScriptAuth
+import com.kirkbushman.auth.UserlessAuth
+import com.kirkbushman.sampleapp.R
+import com.kirkbushman.sampleapp.utils.DoAsync
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.android.synthetic.main.activity_main.*
+import javax.inject.Inject
 
+@AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
+
+    @Inject
+    lateinit var userlessAuth: UserlessAuth
+    @Inject
+    lateinit var scriptAuth: ScriptAuth
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -21,36 +31,21 @@ class MainActivity : AppCompatActivity() {
 
         installed_bttn.setOnClickListener {
 
-            val app = TestApplication.instance
-            app.loadClient(AuthType.INSTALLED_APP)
-
             val intent = Intent(this, InstalledActivity::class.java)
             startActivity(intent)
         }
 
         userless_bttn.setOnClickListener {
 
-            val app = TestApplication.instance
-            app.loadClient(AuthType.USERLESS)
-
-            val authClient = app.authClient
-            if (authClient != null && authClient.hasSavedBearer()) {
+            if (userlessAuth.hasSavedBearer()) {
 
                 val intent = Intent(this, TokenInfoActivity::class.java)
                 startActivity(intent)
             } else {
 
-                var bearer: TokenBearer? = null
-
-                doAsync(
-                    doWork = {
-                        bearer = authClient?.getTokenBearer()
-                    },
+                DoAsync(
+                    doWork = { userlessAuth.authenticate() },
                     onPost = {
-
-                        if (bearer != null) {
-                            app.setBearer(bearer!!)
-                        }
 
                         val intent = Intent(this, TokenInfoActivity::class.java)
                         startActivity(intent)
@@ -61,27 +56,15 @@ class MainActivity : AppCompatActivity() {
 
         script_bttn.setOnClickListener {
 
-            val app = TestApplication.instance
-            app.loadClient(AuthType.SCRIPT)
-
-            val authClient = app.authClient
-            if (authClient != null && authClient.hasSavedBearer()) {
+            if (scriptAuth.hasSavedBearer()) {
 
                 val intent = Intent(this, TokenInfoActivity::class.java)
                 startActivity(intent)
             } else {
 
-                var bearer: TokenBearer? = null
-
-                doAsync(
-                    doWork = {
-                        bearer = authClient?.getTokenBearer()
-                    },
+                DoAsync(
+                    doWork = { scriptAuth.authenticate() },
                     onPost = {
-
-                        if (bearer != null) {
-                            app.setBearer(bearer!!)
-                        }
 
                         val intent = Intent(this, TokenInfoActivity::class.java)
                         startActivity(intent)
@@ -92,19 +75,7 @@ class MainActivity : AppCompatActivity() {
 
         token_info_bttn.setOnClickListener {
 
-            val app = TestApplication.instance
-            app.loadClient()
-
             val intent = Intent(this, TokenInfoActivity::class.java)
-            startActivity(intent)
-        }
-
-        token_edit_bttn.setOnClickListener {
-
-            val app = TestApplication.instance
-            app.loadClient()
-
-            val intent = Intent(this, TokenEditActivity::class.java)
             startActivity(intent)
         }
     }

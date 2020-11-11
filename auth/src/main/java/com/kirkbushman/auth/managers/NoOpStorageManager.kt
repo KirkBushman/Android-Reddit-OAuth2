@@ -1,6 +1,6 @@
 package com.kirkbushman.auth.managers
 
-import com.kirkbushman.auth.models.AuthType
+import com.kirkbushman.auth.models.enums.AuthType
 import com.kirkbushman.auth.models.Token
 
 class NoOpStorageManager : StorageManager {

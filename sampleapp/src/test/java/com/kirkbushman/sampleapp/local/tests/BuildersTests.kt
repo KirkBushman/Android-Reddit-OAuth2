@@ -18,7 +18,6 @@ class BuildersTests {
 
             RedditAuth.Builder()
                 .setUserlessCredentials("")
-                .setScopes(arrayListOf())
                 .setStorageManager(NoOpStorageManager())
                 .setLogging(true)
                 .build()
@@ -39,7 +38,6 @@ class BuildersTests {
 
             RedditAuth.Builder()
                 .setUserlessCredentials("")
-                .setScopes(arrayListOf())
                 .setLogging(true)
                 .build()
         } catch (ex: Exception) {

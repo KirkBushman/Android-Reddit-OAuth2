@@ -1,46 +1,24 @@
-package com.kirkbushman.auth.models
+package com.kirkbushman.auth.models.bearers
 
 import com.kirkbushman.auth.managers.StorageManager
+import com.kirkbushman.auth.models.Token
+import com.kirkbushman.auth.models.enums.AuthType
 
 /**
  * Class that holds and manages the token.
  */
-@Suppress("MemberVisibilityCanBePrivate")
-class TokenBearer(
+abstract class TokenBearer(
 
     /**
      * Used to save in memory the info, about token, auth, and basic info.
      */
     private val storManager: StorageManager,
-
-    /**
-     * Initial token fetched, the future instances should be managed through storManager.
-     */
-    token: Token?,
-
-    /**
-     * The type of authentication grant the token derived from:
-     * Installed Application, Userless, Script
-     */
-    authType: AuthType,
-
-    private inline val renewToken: (Token) -> Token?,
-    private inline val revokeToken: (Token) -> Boolean
 ) {
 
     private var isRevoked = false
 
-    init {
-
-        if (token != null) {
-            storManager.saveToken(token, authType)
-        }
-
-        if (token == null) {
-            isRevoked = true
-            storManager.clearAll()
-        }
-    }
+    abstract fun renewToken(token: Token): Token?
+    abstract fun revokeToken(token: Token): Boolean
 
     fun isAuthed(): Boolean {
         return storManager.isAuthed()
@@ -99,40 +77,6 @@ class TokenBearer(
     }
 
     @Throws(IllegalStateException::class)
-    fun revokeToken() {
-
-        if (isRevoked) {
-            return
-        }
-
-        val token = storManager.getToken()
-        if (token != null) {
-
-            val wasSuccessful = revokeToken(token)
-            if (wasSuccessful) {
-
-                // if successful set the token null, clear the one saven on store
-                isRevoked = true
-
-                storManager.clearAll()
-
-                return
-            }
-
-            throw IllegalStateException("Response was unsuccessful while revoking access token!")
-        }
-    }
-
-    fun isRevoked(): Boolean {
-        return isRevoked
-    }
-
-    private fun shouldRenew(): Boolean {
-        val token = storManager.getToken()
-        return token?.shouldRenew() ?: false
-    }
-
-    @Throws(IllegalStateException::class)
     fun renewToken() {
 
         if (isRevoked) {
@@ -157,5 +101,39 @@ class TokenBearer(
         }
 
         throw IllegalStateException("Response was unsuccessful while renewing token!")
+    }
+
+    fun isRevoked(): Boolean {
+        return isRevoked
+    }
+
+    private fun shouldRenew(): Boolean {
+        val token = storManager.getToken()
+        return token?.shouldRenew() ?: false
+    }
+
+    @Throws(IllegalStateException::class)
+    fun revokeToken() {
+
+        if (isRevoked) {
+            return
+        }
+
+        val token = storManager.getToken()
+        if (token != null) {
+
+            val wasSuccessful = revokeToken(token)
+            if (wasSuccessful) {
+
+                // if successful set the token null, clear the one saven on store
+                isRevoked = true
+
+                storManager.clearAll()
+
+                return
+            }
+
+            throw IllegalStateException("Response was unsuccessful while revoking access token!")
+        }
     }
 }

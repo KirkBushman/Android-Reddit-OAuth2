@@ -2,7 +2,7 @@ package com.kirkbushman.auth.managers
 
 import android.content.Context
 import androidx.core.content.edit
-import com.kirkbushman.auth.models.AuthType
+import com.kirkbushman.auth.models.enums.AuthType
 import com.kirkbushman.auth.models.Token
 
 /**

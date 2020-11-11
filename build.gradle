@@ -3,7 +3,7 @@
 buildscript {
 
     ext {
-        android_gradle_ver = '4.1.0'
+        android_gradle_ver = '4.1.1'
 
         compileSdkVer   = 30
         buildToolsVer   = '30.0.2'
@@ -12,7 +12,11 @@ buildscript {
         compileSdkVer   = 30
 
         kotlin_ver      = '1.4.10'
-        coroutines_ver  = '1.4.0'
+        coroutines_ver  = '1.4.1'
+
+        hilt_ver        = "2.29.1-alpha"
+        ax_hilt_ver     = "1.0.0-alpha02"
+
         ktx_ver         = '1.3.2'
         ktlint_ver      = '0.39.0'
         mdc_ver         = '1.2.1'
@@ -34,6 +38,7 @@ buildscript {
     }
     dependencies {
 
+        classpath "com.google.dagger:hilt-android-gradle-plugin:$hilt_ver"
         classpath "com.android.tools.build:gradle:$android_gradle_ver"
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_ver"
     }
