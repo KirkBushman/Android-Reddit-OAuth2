@@ -69,12 +69,14 @@ dependencies {
     debugImplementation "com.squareup.leakcanary:leakcanary-android:$leakcanary_ver"
 
     testImplementation "androidx.test:core:$test_ver"
+    testImplementation "androidx.arch.core:core-testing:$arch_core_ver"
+
     testImplementation "androidx.test:runner:$test_ver"
     testImplementation "androidx.test:rules:$test_ver"
-
     testImplementation "androidx.test.ext:junit:$junit_ver"
+
     testImplementation "org.mockito:mockito-core:$mockito_ver"
-    // testImplementation "org.mockito:mockito-inline:$mockito_ver"
+    testImplementation "org.mockito:mockito-inline:$mockito_ver"
 
     testImplementation "com.squareup.retrofit2:retrofit:$retrofit_ver"
     testImplementation "com.squareup.retrofit2:converter-moshi:$retrofit_ver"

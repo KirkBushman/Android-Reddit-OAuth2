@@ -44,37 +44,4 @@ class AuthTests {
 
         assertTrue(auth.getAuthType() == AuthType.SCRIPT)
     }
-
-    /*@Test
-    fun redditAuth_mockCheckBearer() {
-
-        val storManager = Mockito.mock(StorageManager::class.java)
-
-        Mockito.doReturn(true).`when`(storManager).hasToken()
-        Mockito.doReturn(true).`when`(storManager).isAuthed()
-
-        val auth = RedditAuth.Builder()
-            .setUserlessCredentials("")
-            .setStorageManager(storManager)
-            .setLogging(true)
-            .build()
-
-        assertTrue(auth.hasSavedBearer())
-    }
-
-    @Test
-    fun redditAuth_mockCheckTokenType() {
-
-        val storManager = Mockito.mock(StorageManager::class.java)
-
-        Mockito.doReturn(AuthType.SCRIPT).`when`(storManager).authType()
-
-        val auth = RedditAuth.Builder()
-            .setUserlessCredentials("")
-            .setStorageManager(storManager)
-            .setLogging(true)
-            .build()
-
-        assertEquals(AuthType.SCRIPT, auth.retrieveSavedBearer())
-    }*/
 }
