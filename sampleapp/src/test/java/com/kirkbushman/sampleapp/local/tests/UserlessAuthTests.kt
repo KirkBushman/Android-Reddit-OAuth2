@@ -4,9 +4,14 @@ import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import com.kirkbushman.auth.UserlessAuth
 import com.kirkbushman.auth.http.RedditAuthClient
 import com.kirkbushman.auth.managers.StorageManager
+import com.kirkbushman.auth.models.Token
+import com.kirkbushman.auth.models.bearers.UserlessTokenBearer
 import com.kirkbushman.auth.models.creds.UserlessCredentials
 import com.kirkbushman.auth.models.enums.AuthType
-import org.junit.Assert
+import okhttp3.ResponseBody
+import org.junit.Assert.assertEquals
+import org.junit.Assert.assertFalse
+import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -17,6 +22,25 @@ import org.mockito.junit.MockitoJUnitRunner
 
 @RunWith(MockitoJUnitRunner.Silent::class)
 class UserlessAuthTests {
+
+    companion object {
+
+        private const val accessToken = "access_token"
+        private val refreshToken = null
+        private const val tokenType = "test_type"
+        private const val expiresInSecs = 121212
+        private const val createdTime = 12323423L
+        private const val scopes = "scopes"
+
+        private val testToken = Token(
+            accessToken = accessToken,
+            refreshToken = refreshToken,
+            tokenType = tokenType,
+            expiresInSecs = expiresInSecs,
+            createdTime = createdTime,
+            scopes = scopes
+        )
+    }
 
     @get:Rule
     var instantExecutorRule = InstantTaskExecutorRule()
@@ -42,7 +66,147 @@ class UserlessAuthTests {
     @Test
     fun authTest_checkType() {
 
-        Assert.assertEquals(AuthType.USERLESS, auth.getAuthType())
+        assertEquals(AuthType.USERLESS, auth.getAuthType())
+    }
+
+    @Test
+    fun authTest_renewToken() {
+
+        Mockito.`when`(credentials.clientId).thenReturn("")
+        Mockito.`when`(credentials.deviceId).thenReturn("")
+
+        Mockito
+            .`when`(
+                client.accessToken("", "")
+            )
+            .thenReturn(testToken)
+
+        val newToken = auth.renewToken(testToken)
+
+        assertEquals(testToken, newToken)
+
+        assertEquals(accessToken, newToken!!.accessToken)
+        assertEquals(refreshToken, newToken.refreshToken)
+        assertEquals(tokenType, newToken.tokenType)
+        assertEquals(expiresInSecs, newToken.expiresInSecs)
+        assertEquals(createdTime, newToken.createdTime)
+        assertEquals(scopes, newToken.scopes)
+    }
+
+    @Test
+    fun authTest_renewTokenNull() {
+
+        Mockito.`when`(credentials.clientId).thenReturn("")
+        Mockito.`when`(credentials.deviceId).thenReturn("")
+
+        Mockito
+            .`when`(
+                client.accessToken("", "")
+            )
+            .thenReturn(null)
+
+        val newToken = auth.renewToken(testToken)
+
+        assertEquals(null, newToken)
+    }
+
+    @Test
+    fun authTest_revokeTokenError() {
+
+        Mockito.`when`(credentials.clientId).thenReturn("")
+        Mockito.`when`(credentials.deviceId).thenReturn("")
+
+        Mockito
+            .`when`(
+                client.revokeAccessToken("", testToken.accessToken)
+            )
+            .thenThrow(IllegalStateException("test exception"))
+
+        assertEquals(false, auth.revokeToken(testToken))
+    }
+
+    @Test
+    fun authTest_revokeTokenNull() {
+
+        Mockito.`when`(credentials.clientId).thenReturn("")
+        Mockito.`when`(credentials.deviceId).thenReturn("")
+
+        Mockito
+            .`when`(
+                client.revokeAccessToken("", testToken.accessToken)
+            )
+            .thenReturn(null)
+
+        assertEquals(false, auth.revokeToken(testToken))
+    }
+
+    @Test
+    fun authTest_revokeTokenRight() {
+
+        Mockito.`when`(credentials.clientId).thenReturn("")
+        Mockito.`when`(credentials.deviceId).thenReturn("")
+
+        val response = Mockito.mock(ResponseBody::class.java)
+
+        Mockito
+            .`when`(
+                client.revokeAccessToken("", testToken.accessToken)
+            )
+            .thenReturn(response)
+
+        assertEquals(true, auth.revokeToken(testToken))
+    }
+
+    @Test
+    fun authTest_authenticateNullToken() {
+
+        Mockito.`when`(credentials.clientId).thenReturn("")
+        Mockito.`when`(credentials.deviceId).thenReturn("")
+
+        Mockito
+            .`when`(
+                client.accessToken("", "")
+            )
+            .thenReturn(null)
+
+        val bearer = auth.authenticate()
+
+        assertEquals(null, bearer)
+    }
+
+    @Test
+    fun authTest_authenticateError() {
+
+        Mockito.`when`(credentials.clientId).thenReturn("")
+        Mockito.`when`(credentials.deviceId).thenReturn("")
+
+        Mockito
+            .`when`(
+                client.accessToken("", "")
+            )
+            .thenThrow(IllegalStateException("test exception"))
+
+        val bearer = auth.authenticate()
+
+        assertEquals(null, bearer)
+    }
+
+    @Test
+    fun authTest_authenticateRight() {
+
+        Mockito.`when`(credentials.clientId).thenReturn("")
+        Mockito.`when`(credentials.deviceId).thenReturn("")
+
+        Mockito
+            .`when`(
+                client.accessToken("", "")
+            )
+            .thenReturn(testToken)
+
+        val bearer = auth.authenticate()
+
+        assertTrue(bearer != null)
+        assertTrue(bearer is UserlessTokenBearer)
     }
 
     @Test
@@ -52,7 +216,7 @@ class UserlessAuthTests {
         Mockito.`when`(storageManager.hasToken()).thenReturn(true)
         Mockito.`when`(storageManager.authType()).thenReturn(AuthType.SCRIPT)
 
-        Assert.assertFalse(auth.hasSavedBearer())
+        assertFalse(auth.hasSavedBearer())
     }
 
     @Test
@@ -62,7 +226,7 @@ class UserlessAuthTests {
         Mockito.`when`(storageManager.hasToken()).thenReturn(false)
         Mockito.`when`(storageManager.authType()).thenReturn(AuthType.USERLESS)
 
-        Assert.assertFalse(auth.hasSavedBearer())
+        assertFalse(auth.hasSavedBearer())
     }
 
     @Test
@@ -72,6 +236,6 @@ class UserlessAuthTests {
         Mockito.`when`(storageManager.hasToken()).thenReturn(true)
         Mockito.`when`(storageManager.authType()).thenReturn(AuthType.USERLESS)
 
-        Assert.assertTrue(auth.hasSavedBearer())
+        assertTrue(auth.hasSavedBearer())
     }
 }

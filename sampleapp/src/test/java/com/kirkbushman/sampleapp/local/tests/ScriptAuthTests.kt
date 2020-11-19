@@ -83,9 +83,10 @@ class ScriptAuthTests {
             )
             .thenReturn(testToken)
 
-        assertEquals(testToken, auth.renewToken(testToken))
-
         val newToken = auth.renewToken(testToken)
+
+        assertEquals(testToken, newToken)
+
         assertEquals(accessToken, newToken!!.accessToken)
         assertEquals(refreshToken, newToken.refreshToken)
         assertEquals(tokenType, newToken.tokenType)
