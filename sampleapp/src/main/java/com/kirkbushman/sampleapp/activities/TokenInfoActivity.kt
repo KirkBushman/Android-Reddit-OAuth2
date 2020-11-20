@@ -104,93 +104,18 @@ class TokenInfoActivity : AppCompatActivity() {
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
 
-        if (item.itemId == android.R.id.home) {
-
-            onBackPressed()
-            return true
-        }
-
         if (bearer == null) {
             return super.onOptionsItemSelected(item)
         }
 
-        if (item.itemId == R.id.action_renew) {
+        return when (item.itemId) {
 
-            if (bearer!!.isRevoked()) {
+            android.R.id.home -> { onBackPressed(); true }
+            R.id.action_renew -> { tokenRenew(); true }
+            R.id.action_revoke -> { tokenRevoke(); true }
 
-                revokedErrorDialog.show()
-            } else {
-
-                var exception: Exception? = null
-
-                DoAsync(
-                    doWork = {
-
-                        try {
-                            bearer!!.renewToken()
-                        } catch (ex: Exception) {
-                            exception = ex
-                        }
-                    },
-                    onPost = {
-
-                        val message = if (exception != null) {
-
-                            "A problem occured while refreshing the token, with exception: ${exception!!.message}"
-                        } else {
-                            val now = SimpleDateFormat("dd-MM-yyyy HH:mm", Locale.getDefault()).format(Date())
-
-                            "${bearer!!.getAccessToken()}, Refreshed $now"
-                        }
-
-                        bindToken(bearer, message)
-
-                        Toast.makeText(this, "Token refreshed successfully", Toast.LENGTH_LONG).show()
-                    }
-                )
-            }
-
-            return true
-        } else if (item.itemId == R.id.action_revoke) {
-
-            var exception: Exception? = null
-
-            if (bearer!!.isRevoked()) {
-
-                revokedErrorDialog.show()
-            } else {
-
-                DoAsync(
-                    doWork = {
-
-                        try {
-                            bearer!!.revokeToken()
-                        } catch (ex: Exception) {
-                            exception = ex
-                        }
-                    },
-                    onPost = {
-
-                        val message = if (exception != null) {
-
-                            "A problem has occurred while revoking the token, with message: ${exception!!.message}"
-                        } else {
-                            val now = SimpleDateFormat("dd-MM-yyyy HH:mm", Locale.getDefault()).format(Date())
-
-                            "Token was revoked $now"
-                        }
-
-                        bindToken(bearer, message)
-
-                        Toast.makeText(this, "Token revoked successfully", Toast.LENGTH_LONG).show()
-                    }
-                )
-            }
-
-            return true
+            else -> super.onOptionsItemSelected(item)
         }
-
-        return super.onOptionsItemSelected(item)
     }
 
     private fun bindToken(bearer: TokenBearer?, message: String? = null) {
@@ -232,6 +157,80 @@ class TokenInfoActivity : AppCompatActivity() {
             token_info_expires_in.text = ""
             token_info_created_time.text = ""
             token_info_scopes.text = ""
+        }
+    }
+
+    private fun tokenRenew() {
+
+        if (bearer!!.isRevoked()) {
+
+            revokedErrorDialog.show()
+        } else {
+
+            var exception: Exception? = null
+
+            DoAsync(
+                doWork = {
+
+                    try {
+                        bearer!!.renewToken()
+                    } catch (ex: Exception) {
+                        exception = ex
+                    }
+                },
+                onPost = {
+
+                    val message = if (exception != null) {
+
+                        "A problem occured while refreshing the token, with exception: ${exception!!.message}"
+                    } else {
+                        val now = SimpleDateFormat("dd-MM-yyyy HH:mm", Locale.getDefault()).format(Date())
+
+                        "${bearer!!.getAccessToken()}, Refreshed $now"
+                    }
+
+                    bindToken(bearer, message)
+
+                    Toast.makeText(this, "Token refreshed successfully", Toast.LENGTH_LONG).show()
+                }
+            )
+        }
+    }
+
+    private fun tokenRevoke() {
+
+        var exception: Exception? = null
+
+        if (bearer!!.isRevoked()) {
+
+            revokedErrorDialog.show()
+        } else {
+
+            DoAsync(
+                doWork = {
+
+                    try {
+                        bearer!!.revokeToken()
+                    } catch (ex: Exception) {
+                        exception = ex
+                    }
+                },
+                onPost = {
+
+                    val message = if (exception != null) {
+
+                        "A problem has occurred while revoking the token, with message: ${exception!!.message}"
+                    } else {
+                        val now = SimpleDateFormat("dd-MM-yyyy HH:mm", Locale.getDefault()).format(Date())
+
+                        "Token was revoked $now"
+                    }
+
+                    bindToken(bearer, message)
+
+                    Toast.makeText(this, "Token revoked successfully", Toast.LENGTH_LONG).show()
+                }
+            )
         }
     }
 }

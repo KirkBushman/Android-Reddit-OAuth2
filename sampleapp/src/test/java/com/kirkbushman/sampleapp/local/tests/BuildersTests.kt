@@ -45,7 +45,11 @@ class BuildersTests {
             exception = ex
         } finally {
             assertNotNull("Assert that an error is thrown when storeManager is not set", exception)
-            assertEquals("Assert the error is IllegalStateException", IllegalArgumentException::class.java, exception?.javaClass)
+            assertEquals(
+                "Assert the error is IllegalStateException",
+                IllegalArgumentException::class.java,
+                exception?.javaClass
+            )
         }
     }
 }

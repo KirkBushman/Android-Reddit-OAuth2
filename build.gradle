@@ -48,6 +48,10 @@ buildscript {
     }
 }
 
+plugins {
+    id "io.gitlab.arturbosch.detekt" version "1.14.2"
+}
+
 allprojects {
     repositories {
         google()
@@ -75,6 +79,21 @@ subprojects {
         if (project.tasks.findByName('check')) {
             check.dependsOn('checkstyle')
             check.dependsOn('ktlint')
+        }
+    }
+
+    // detekt
+    detekt {
+        // failFast = true
+        buildUponDefaultConfig = true
+        toolVersion = "1.14.2"
+        input = files("$projectDir")
+        config = files("${project.rootDir}/config/detekt/detekt.yml")
+        reports {
+            html {
+                enabled = true
+                destination = file("$project.projectDir/detekt-report.html")
+            }
         }
     }
 }
