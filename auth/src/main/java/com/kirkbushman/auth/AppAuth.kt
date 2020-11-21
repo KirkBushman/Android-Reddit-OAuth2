@@ -144,38 +144,17 @@ class AppAuth(
         }
 
         if (url.contains("error")) {
+
             val errorStr = errorRegex.find(url)?.value ?: ""
-
-            if (errorStr == "access_denied") {
-                throw AccessDeniedException("User chose not to grant your app permissions!")
-            }
-
-            if (errorStr == "unsupported_response_type") {
-                throw UnsupportedResponseTypeException("Invalid response_type parameter in initial Authorization!")
-            }
-
-            if (errorStr == "invalid_scope") {
-                throw InvalidScopesException("Invalid scope parameter in initial Authorization!")
-            }
-
-            if (errorStr == "invalid_request") {
-                throw InvalidRequestException("There was an issue with the request sent to /api/v1/authorize!")
-            }
-
-            throw OAuth2Exception("The Reddit API returned the error: $errorStr")
+            throwOnErrorStr(errorStr)
         }
 
         if (!url.contains("state")) {
             throw OAuth2Exception("State param is missing from response url!")
         }
 
-        val stateParam = stateRegex.find(url)?.value ?: ""
-        if (stateParam == "") {
-            throw IllegalStateException("Could not retrieve state param value!")
-        }
-        if (stateParam != state) {
-            throw IllegalStateException("Saved State and retrieved one are different!")
-        }
+        val stateStr = stateRegex.find(url)?.value ?: ""
+        throwOnStateStr(stateStr)
 
         authCode = codeRegex.find(url)?.value ?: ""
         if (authCode == "") {
@@ -213,5 +192,31 @@ class AppAuth(
             storManager = storManager,
             appAuth = this
         )
+    }
+
+    private fun throwOnErrorStr(errorStr: String) {
+
+        throw when (errorStr) {
+            "access_denied" ->
+                AccessDeniedException("User chose not to grant your app permissions!")
+            "unsupported_response_type" ->
+                UnsupportedResponseTypeException("Invalid response_type parameter in initial Authorization!")
+            "invalid_scope" ->
+                InvalidScopesException("Invalid scope parameter in initial Authorization!")
+            "invalid_request" ->
+                InvalidRequestException("There was an issue with the request sent to /api/v1/authorize!")
+
+            else -> OAuth2Exception("The Reddit API returned the error: $errorStr")
+        }
+    }
+
+    private fun throwOnStateStr(stateStr: String) {
+
+        when {
+            stateStr == "" ->
+                throw IllegalStateException("Could not retrieve state param value!")
+            stateStr != state ->
+                throw IllegalStateException("Saved State and retrieved one are different!")
+        }
     }
 }

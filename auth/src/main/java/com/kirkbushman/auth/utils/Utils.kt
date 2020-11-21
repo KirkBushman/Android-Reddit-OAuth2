@@ -15,6 +15,9 @@ object Utils {
 
     const val BASE_URL = "https://www.reddit.com"
 
+    private const val RANDSTR_MIN = 1
+    private const val RANDSTR_MAX = 32
+
     private val STRING_CHARACTERS = ('0'..'9').plus('a'..'z').toTypedArray()
 
     fun addParamsToUrl(url: String, array: Array<String>): String {
@@ -22,7 +25,7 @@ object Utils {
     }
 
     fun generateRandomString(): String {
-        return (1..32).map { STRING_CHARACTERS.random() }.joinToString("")
+        return (RANDSTR_MIN..RANDSTR_MAX).map { STRING_CHARACTERS.random() }.joinToString("")
     }
 
     fun getDeviceUUID(): String {

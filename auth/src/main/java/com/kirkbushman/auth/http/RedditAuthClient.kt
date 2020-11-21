@@ -1,5 +1,6 @@
 package com.kirkbushman.auth.http
 
+import com.kirkbushman.auth.errors.OAuth2Exception
 import com.kirkbushman.auth.models.ScopesEnvelope
 import com.kirkbushman.auth.models.Token
 import com.kirkbushman.auth.utils.toHeaderString
@@ -15,7 +16,7 @@ class RedditAuthClient(private val api: RedditAuthService) {
         if (res.isSuccessful) {
             return res.body()
         } else {
-            throw Exception(res.errorBody().toString())
+            throw OAuth2Exception(res.errorBody().toString())
         }
     }
 
@@ -36,7 +37,7 @@ class RedditAuthClient(private val api: RedditAuthService) {
         if (res.isSuccessful) {
             return res.body()
         } else {
-            throw Exception(res.errorBody().toString())
+            throw OAuth2Exception(res.errorBody().toString())
         }
     }
 
@@ -58,7 +59,7 @@ class RedditAuthClient(private val api: RedditAuthService) {
         if (res.isSuccessful) {
             return res.body()
         } else {
-            throw Exception(res.errorBody().toString())
+            throw OAuth2Exception(res.errorBody().toString())
         }
     }
 
@@ -77,7 +78,7 @@ class RedditAuthClient(private val api: RedditAuthService) {
         if (res.isSuccessful) {
             return res.body()
         } else {
-            throw Exception(res.errorBody().toString())
+            throw OAuth2Exception(res.errorBody().toString())
         }
     }
 
@@ -95,7 +96,7 @@ class RedditAuthClient(private val api: RedditAuthService) {
         if (res.isSuccessful) {
             return res.body()
         } else {
-            throw Exception(res.errorBody().toString())
+            throw OAuth2Exception(res.errorBody().toString())
         }
     }
 
@@ -114,7 +115,7 @@ class RedditAuthClient(private val api: RedditAuthService) {
         if (res.isSuccessful) {
             return res.body()
         } else {
-            throw Exception(res.errorBody().toString())
+            throw OAuth2Exception(res.errorBody().toString())
         }
     }
 
@@ -133,7 +134,7 @@ class RedditAuthClient(private val api: RedditAuthService) {
         if (res.isSuccessful) {
             return res.body()
         } else {
-            throw Exception(res.errorBody().toString())
+            throw OAuth2Exception(res.errorBody().toString())
         }
     }
 
@@ -153,7 +154,7 @@ class RedditAuthClient(private val api: RedditAuthService) {
         if (res.isSuccessful) {
             return res.body()
         } else {
-            throw Exception(res.errorBody().toString())
+            throw OAuth2Exception(res.errorBody().toString())
         }
     }
 }

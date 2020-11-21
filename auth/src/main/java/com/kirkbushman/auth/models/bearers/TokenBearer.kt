@@ -54,26 +54,9 @@ abstract class TokenBearer(
         return storManager.getToken()?.accessToken
     }
 
-    fun getRefreshToken(): String? {
-
-        return storManager.getToken()?.refreshToken
-    }
-
-    fun getAuthHeaderStr(): String? {
-
-        if (isRevoked()) {
-            return null
-        }
-
-        if (shouldRenew()) {
-            renewToken()
-        }
-
-        return "Authorization: bearer ${getAccessToken()}"
-    }
-
-    fun getAuthHeader(): Map<String, String> {
-        return hashMapOf("Authorization" to "bearer ".plus(getAccessToken()))
+    private fun shouldRenew(): Boolean {
+        val token = storManager.getToken()
+        return token?.shouldRenew() ?: false
     }
 
     @Throws(IllegalStateException::class)
@@ -105,11 +88,6 @@ abstract class TokenBearer(
 
     fun isRevoked(): Boolean {
         return isRevoked
-    }
-
-    private fun shouldRenew(): Boolean {
-        val token = storManager.getToken()
-        return token?.shouldRenew() ?: false
     }
 
     @Throws(IllegalStateException::class)

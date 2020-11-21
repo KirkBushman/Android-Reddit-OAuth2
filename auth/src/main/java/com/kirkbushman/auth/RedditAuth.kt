@@ -1,6 +1,5 @@
 package com.kirkbushman.auth
 
-import com.kirkbushman.auth.builders.BaseAuthBuilder
 import com.kirkbushman.auth.builders.BaseSavedBuilder
 import com.kirkbushman.auth.http.RedditAuthClient
 import com.kirkbushman.auth.managers.StorageManager
@@ -52,22 +51,31 @@ abstract class RedditAuth constructor(
         storManager.saveToken(token, authType)
     }
 
-    class Builder : BaseAuthBuilder() {
+    open class Builder {
 
-        override fun setStorageManager(storManager: StorageManager?): Builder {
-            return super.setStorageManager(storManager) as Builder
+        protected var storManager: StorageManager? = null
+        protected var retrofit: Retrofit? = null
+        protected var client: RedditAuthClient? = null
+        protected var logging: Boolean = false
+
+        open fun setStorageManager(storManager: StorageManager?): Builder {
+            this.storManager = storManager
+            return this
         }
 
-        override fun setRetrofit(retrofit: Retrofit?): Builder {
-            return super.setRetrofit(retrofit) as Builder
+        open fun setRetrofit(retrofit: Retrofit?): Builder {
+            this.retrofit = retrofit
+            return this
         }
 
-        override fun setClient(client: RedditAuthClient?): Builder {
-            return super.setClient(client) as Builder
+        open fun setClient(client: RedditAuthClient?): Builder {
+            this.client = client
+            return this
         }
 
-        override fun setLogging(logging: Boolean): Builder {
-            return super.setLogging(logging) as Builder
+        open fun setLogging(logging: Boolean): Builder {
+            this.logging = logging
+            return this
         }
 
         fun setApplicationCredentials(credentials: ApplicationCredentials): AppAuthBuilder {
@@ -116,7 +124,13 @@ abstract class RedditAuth constructor(
             return builder
         }
 
-        fun setScriptAuthCredentials(username: String, password: String, clientId: String, clientSecret: String): ScriptAuthBuilder {
+        fun setScriptAuthCredentials(
+            username: String,
+            password: String,
+            clientId: String,
+            clientSecret: String
+        ): ScriptAuthBuilder {
+
             val builder = ScriptAuthBuilder(
                 ScriptCredentials(
                     username = username,
@@ -132,7 +146,7 @@ abstract class RedditAuth constructor(
         }
     }
 
-    class AppAuthBuilder(private var credentials: ApplicationCredentials) : BaseAuthBuilder() {
+    class AppAuthBuilder(private var credentials: ApplicationCredentials) : Builder() {
 
         private var scopes: String = ""
 
@@ -184,7 +198,7 @@ abstract class RedditAuth constructor(
         }
     }
 
-    class UserlessAuthBuilder(private var credentials: UserlessCredentials) : BaseAuthBuilder() {
+    class UserlessAuthBuilder(private var credentials: UserlessCredentials) : Builder() {
 
         override fun setStorageManager(storManager: StorageManager?): UserlessAuthBuilder {
             return super.setStorageManager(storManager) as UserlessAuthBuilder
@@ -213,7 +227,7 @@ abstract class RedditAuth constructor(
         }
     }
 
-    class ScriptAuthBuilder(private var credentials: ScriptCredentials) : BaseAuthBuilder() {
+    class ScriptAuthBuilder(private var credentials: ScriptCredentials) : Builder() {
 
         override fun setStorageManager(storManager: StorageManager?): ScriptAuthBuilder {
             return super.setStorageManager(storManager) as ScriptAuthBuilder
@@ -259,7 +273,9 @@ abstract class RedditAuth constructor(
                             client = client ?: Utils.buildDefaultClient(retrofit, logging),
                             storManager = storManager,
                             credentials = credentials as? ApplicationCredentials
-                                ?: throw IllegalArgumentException("Credentials provided must be ApplicationCredentials!"),
+                                ?: throw IllegalArgumentException(
+                                    "Credentials provided must be ApplicationCredentials!"
+                                ),
                             scopes = scopes
                         )
 
@@ -268,7 +284,9 @@ abstract class RedditAuth constructor(
                             client = client ?: Utils.buildDefaultClient(retrofit, logging),
                             storManager = storManager,
                             credentials = credentials as? UserlessCredentials
-                                ?: throw IllegalArgumentException("Credentials provided must be UserlessCredentials!")
+                                ?: throw IllegalArgumentException(
+                                    "Credentials provided must be UserlessCredentials!"
+                                )
                         )
 
                     AuthType.SCRIPT ->
@@ -276,7 +294,9 @@ abstract class RedditAuth constructor(
                             client = client ?: Utils.buildDefaultClient(retrofit, logging),
                             storManager = storManager,
                             credentials = credentials as? ScriptCredentials
-                                ?: throw IllegalArgumentException("Credentials provided must be ScriptCredentials!")
+                                ?: throw IllegalArgumentException(
+                                    "Credentials provided must be ScriptCredentials!"
+                                )
                         )
 
                     else -> null

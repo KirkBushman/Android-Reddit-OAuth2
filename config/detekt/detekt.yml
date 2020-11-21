@@ -91,8 +91,8 @@ complexity:
     threshold: 60
   LongParameterList:
     active: true
-    functionThreshold: 6
-    constructorThreshold: 7
+    functionThreshold: 15
+    constructorThreshold: 15
     ignoreDefaultParameters: false
     ignoreDataClasses: true
     ignoreAnnotated: []
@@ -623,7 +623,7 @@ style:
     active: false
   ThrowsCount:
     active: true
-    max: 2
+    max: 4
   TrailingWhitespace:
     active: false
   UnderscoresInNumericLiterals:

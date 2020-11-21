@@ -45,7 +45,7 @@ data class Token(
      * Unix time value of the current date and time,
      * used to determine in the future the expirationTime adding expiresInSecs
      */
-    val createdTime: Long = (System.currentTimeMillis() / 1000L),
+    val createdTime: Long = (System.currentTimeMillis() / MILLIS),
 
     /**
      * Scopes this token will have while using this token,
@@ -56,6 +56,12 @@ data class Token(
 
 ) : Parcelable {
 
+    companion object {
+
+        private const val MILLIS = 1000L
+        private const val FIVE_MINS = 300L
+    }
+
     @IgnoredOnParcel
     val expirationTime by lazy { createdTime + expiresInSecs }
 
@@ -65,8 +71,8 @@ data class Token(
      * 5 mins = 5 * 60 = 300
      */
     fun shouldRenew(): Boolean {
-        val currentTimestamp = System.currentTimeMillis() / 1000L
-        return (currentTimestamp + 300L) >= expirationTime
+        val currentTimestamp = System.currentTimeMillis() / MILLIS
+        return (currentTimestamp + FIVE_MINS) >= expirationTime
     }
 
     fun generateNewFrom(oldToken: Token): Token {

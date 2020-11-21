@@ -45,13 +45,7 @@ class SharedPrefsStorageManager(context: Context) : StorageManager {
     }
 
     override fun getToken(): Token {
-        if (
-            !prefs.contains(LAST_ACCESS_TOKEN) ||
-            !prefs.contains(LAST_TOKEN_TYPE) ||
-            !prefs.contains(LAST_EXPIRES_IN) ||
-            !prefs.contains(LAST_CREATED_TIME) ||
-            !prefs.contains(LAST_SCOPES)
-        ) {
+        if (!hasToken()) {
             throw IllegalStateException("Token not found in store! did you ever saved one?")
         }
 

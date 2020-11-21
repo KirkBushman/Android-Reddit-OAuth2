@@ -1,8 +1,11 @@
-apply plugin: 'com.android.application'
-apply plugin: 'kotlin-android'
-apply plugin: 'kotlin-android-extensions'
-apply plugin: 'kotlin-kapt'
-apply plugin: 'dagger.hilt.android.plugin'
+plugins {
+    id "com.android.application"
+    id "kotlin-android"
+    id "kotlin-android-extensions"
+    id "kotlin-kapt"
+    id "dagger.hilt.android.plugin"
+    id "io.gitlab.arturbosch.detekt"
+}
 
 android {
     compileSdkVersion compileSdkVer
@@ -42,6 +45,20 @@ android {
 
     testOptions {
         unitTests.includeAndroidResources = true
+    }
+}
+
+// detekt
+detekt {
+    // failFast = true
+    buildUponDefaultConfig = true
+    input = files("$projectDir")
+    config = files("${project.rootDir}/config/detekt/detekt.yml")
+    reports {
+        html {
+            enabled = true
+            destination = file("$project.projectDir/detekt-report.html")
+        }
     }
 }
 

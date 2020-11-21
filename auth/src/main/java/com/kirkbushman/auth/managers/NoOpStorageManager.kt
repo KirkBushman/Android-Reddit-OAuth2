@@ -21,6 +21,6 @@ class NoOpStorageManager : StorageManager {
         return null
     }
 
-    override fun saveToken(token: Token, authType: AuthType) {}
-    override fun clearAll() {}
+    override fun saveToken(token: Token, authType: AuthType) = Unit
+    override fun clearAll() = Unit
 }
