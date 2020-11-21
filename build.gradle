@@ -19,6 +19,7 @@ buildscript {
 
         ktx_ver = '1.3.2'
         ktlint_ver = '0.39.0'
+        detekt_ver = '1.14.2'
 
         mdc_ver = '1.2.1'
 
@@ -40,16 +41,14 @@ buildscript {
         jcenter()
         mavenCentral()
     }
+
     dependencies {
 
         classpath "com.google.dagger:hilt-android-gradle-plugin:$hilt_ver"
         classpath "com.android.tools.build:gradle:$android_gradle_ver"
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_ver"
+        classpath "io.gitlab.arturbosch.detekt:detekt-gradle-plugin:$detekt_ver"
     }
-}
-
-plugins {
-    id "io.gitlab.arturbosch.detekt" version "1.14.2" apply false
 }
 
 allprojects {
@@ -63,6 +62,7 @@ allprojects {
 subprojects {
 
     apply plugin: 'checkstyle'
+    apply plugin: 'io.gitlab.arturbosch.detekt'
     apply from: "${project.rootDir}/ktlint.gradle"
 
     task checkstyle(type: Checkstyle) {
