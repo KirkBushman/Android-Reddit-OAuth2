@@ -16,10 +16,10 @@ import com.kirkbushman.auth.models.creds.UserlessCredentials
 import com.kirkbushman.auth.models.enums.AuthType
 import com.kirkbushman.auth.utils.Utils
 import com.kirkbushman.sampleapp.R
+import com.kirkbushman.sampleapp.databinding.ActivityInfoBinding
 import com.kirkbushman.sampleapp.module.TestCredentials
 import com.kirkbushman.sampleapp.utils.DoAsync
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.android.synthetic.main.activity_info.*
 import java.text.SimpleDateFormat
 import java.util.*
 import javax.inject.Inject
@@ -32,6 +32,8 @@ class TokenInfoActivity : AppCompatActivity() {
     lateinit var credentials: TestCredentials
     @Inject
     lateinit var prefs: SharedPrefsStorageManager
+
+    lateinit var binding: ActivityInfoBinding
 
     private var bearer: TokenBearer? = null
 
@@ -46,9 +48,11 @@ class TokenInfoActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_info)
 
-        setSupportActionBar(toolbar)
+        binding = ActivityInfoBinding.inflate(layoutInflater)
+        setContentView(binding.root)
+
+        setSupportActionBar(binding.toolbar)
         supportActionBar?.let {
             it.setDisplayHomeAsUpEnabled(true)
             it.setDisplayShowHomeEnabled(true)
@@ -122,41 +126,41 @@ class TokenInfoActivity : AppCompatActivity() {
 
         if (message != null) {
 
-            token_info_message.visibility = View.VISIBLE
-            token_info_message.text = message
+            binding.tokenInfoMessage.visibility = View.VISIBLE
+            binding.tokenInfoMessage.text = message
         } else {
-            token_info_message.visibility = View.GONE
+            binding.tokenInfoMessage.visibility = View.GONE
         }
 
         val isAuthedText = "IsAuthed: ${bearer?.isAuthed() ?: false}"
-        token_info_is_authed.text = isAuthedText
+        binding.tokenInfoIsAuthed.text = isAuthedText
 
         val authTypeText = "AuthType: ${bearer?.getAuthType() ?: "NONE"}"
-        token_info_auth_type.text = authTypeText
+        binding.tokenInfoAuthType.text = authTypeText
 
         val token = bearer?.getToken()
         if (token != null) {
 
             val accessTokenText = "AccessToken: ${token.accessToken}"
-            token_info_access_token.text = accessTokenText
+            binding.tokenInfoAccessToken.text = accessTokenText
             val refreshTokenText = "RefreshToken: ${token.refreshToken}"
-            token_info_refresh_token.text = refreshTokenText
+            binding.tokenInfoRefreshToken.text = refreshTokenText
             val tokenTypeText = "TokenType: ${token.tokenType}"
-            token_info_token_type.text = tokenTypeText
+            binding.tokenInfoTokenType.text = tokenTypeText
             val expiresInText = "ExpiresIn: ${token.expirationTime}"
-            token_info_expires_in.text = expiresInText
+            binding.tokenInfoExpiresIn.text = expiresInText
             val createdTimeText = "CreatedTime: ${token.createdTime}"
-            token_info_created_time.text = createdTimeText
+            binding.tokenInfoCreatedTime.text = createdTimeText
             val scopesText = "Scopes: ${token.scopes}"
-            token_info_scopes.text = scopesText
+            binding.tokenInfoScopes.text = scopesText
         } else {
 
-            token_info_access_token.text = ""
-            token_info_refresh_token.text = ""
-            token_info_token_type.text = ""
-            token_info_expires_in.text = ""
-            token_info_created_time.text = ""
-            token_info_scopes.text = ""
+            binding.tokenInfoAccessToken.text = ""
+            binding.tokenInfoRefreshToken.text = ""
+            binding.tokenInfoTokenType.text = ""
+            binding.tokenInfoExpiresIn.text = ""
+            binding.tokenInfoCreatedTime.text = ""
+            binding.tokenInfoScopes.text = ""
         }
     }
 

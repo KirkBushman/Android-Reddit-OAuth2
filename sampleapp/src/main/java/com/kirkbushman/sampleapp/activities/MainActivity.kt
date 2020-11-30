@@ -5,10 +5,9 @@ import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import com.kirkbushman.auth.ScriptAuth
 import com.kirkbushman.auth.UserlessAuth
-import com.kirkbushman.sampleapp.R
+import com.kirkbushman.sampleapp.databinding.ActivityMainBinding
 import com.kirkbushman.sampleapp.utils.DoAsync
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.android.synthetic.main.activity_main.*
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -19,23 +18,27 @@ class MainActivity : AppCompatActivity() {
     @Inject
     lateinit var scriptAuth: ScriptAuth
 
+    lateinit var binding: ActivityMainBinding
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
 
-        setSupportActionBar(toolbar)
+        binding = ActivityMainBinding.inflate(layoutInflater)
+        setContentView(binding.root)
+
+        setSupportActionBar(binding.toolbar)
         supportActionBar?.let {
             it.setDisplayHomeAsUpEnabled(true)
             it.setDisplayShowHomeEnabled(true)
         }
 
-        installed_bttn.setOnClickListener {
+        binding.installedBttn.setOnClickListener {
 
             val intent = Intent(this, InstalledActivity::class.java)
             startActivity(intent)
         }
 
-        userless_bttn.setOnClickListener {
+        binding.userlessBttn.setOnClickListener {
 
             if (userlessAuth.hasSavedBearer()) {
 
@@ -54,7 +57,7 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
-        script_bttn.setOnClickListener {
+        binding.scriptBttn.setOnClickListener {
 
             if (scriptAuth.hasSavedBearer()) {
 
@@ -73,7 +76,7 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
-        token_info_bttn.setOnClickListener {
+        binding.tokenInfoBttn.setOnClickListener {
 
             val intent = Intent(this, TokenInfoActivity::class.java)
             startActivity(intent)

@@ -8,10 +8,9 @@ import android.webkit.WebView
 import android.webkit.WebViewClient
 import androidx.appcompat.app.AppCompatActivity
 import com.kirkbushman.auth.AppAuth
-import com.kirkbushman.sampleapp.R
+import com.kirkbushman.sampleapp.databinding.ActivityInstalledBinding
 import com.kirkbushman.sampleapp.utils.DoAsync
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.android.synthetic.main.activity_installed.*
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -20,11 +19,15 @@ class InstalledActivity : AppCompatActivity() {
     @Inject
     lateinit var appAuth: AppAuth
 
+    lateinit var binding: ActivityInstalledBinding
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_installed)
 
-        setSupportActionBar(toolbar)
+        binding = ActivityInstalledBinding.inflate(layoutInflater)
+        setContentView(binding.root)
+
+        setSupportActionBar(binding.toolbar)
         supportActionBar?.let {
             it.setDisplayHomeAsUpEnabled(true)
             it.setDisplayShowHomeEnabled(true)
@@ -36,11 +39,11 @@ class InstalledActivity : AppCompatActivity() {
             startActivity(intent)
         } else {
 
-            browser.webViewClient = object : WebViewClient() {
+            binding.browser.webViewClient = object : WebViewClient() {
                 override fun onPageStarted(view: WebView, url: String, favicon: Bitmap?) {
 
                     if (appAuth.isRedirectedUrl(url)) {
-                        browser.stopLoading()
+                        binding.browser.stopLoading()
 
                         DoAsync(
                             doWork = {
@@ -58,17 +61,15 @@ class InstalledActivity : AppCompatActivity() {
                 }
             }
 
-            browser.clearFormData()
-            browser.loadUrl(appAuth.provideAuthorizeUrl())
+            binding.browser.clearFormData()
+            binding.browser.loadUrl(appAuth.provideAuthorizeUrl())
         }
     }
 
     override fun onDestroy() {
         super.onDestroy()
 
-        if (browser != null) {
-            browser.removeAllViews()
-            browser.destroy()
-        }
+        binding.browser.removeAllViews()
+        binding.browser.destroy()
     }
 }
