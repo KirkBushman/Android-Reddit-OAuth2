@@ -53,7 +53,7 @@ detekt {
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
 
-    implementation "androidx.core:core-ktx:$ktx_ver"
+    implementation "androidx.core:core-ktx:$ax_core_ver"
 
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_ver"
 

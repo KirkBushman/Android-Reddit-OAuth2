@@ -82,10 +82,10 @@ dependencies {
     implementation "com.squareup.retrofit2:retrofit:$retrofit_ver"
 
     implementation "com.google.android.material:material:$mdc_ver"
-    implementation "androidx.core:core-ktx:$ktx_ver"
+    implementation "androidx.core:core-ktx:$ax_core_ver"
 
-    implementation 'androidx.appcompat:appcompat:1.2.0'
-    implementation 'androidx.browser:browser:1.2.0'
+    implementation "androidx.appcompat:appcompat:$ax_appcompat_ver"
+    implementation "androidx.browser:browser:$ax_browser_ver"
 
     debugImplementation "com.squareup.leakcanary:leakcanary-android:$leakcanary_ver"
 
