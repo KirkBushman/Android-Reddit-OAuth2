@@ -1,7 +1,7 @@
 # Android-Reddit-OAuth2
 
 This is a OAuth2 authentication client for the Reddit API built for Android.\
-This library is used as a base for this API wrapper: 
+This library is used as a base for this API wrapper:
 https://github.com/KirkBushman/ARAW
 
 
@@ -35,11 +35,11 @@ The clientId and redirectUrl should match what you wrote on the reddit api conso
 val authClient = RedditAuth.Builder()
             // specify the credentials you can find on your reddit app console
             .setApplicationCredentials(creds.clientId, creds.redirectUrl)
-            // the api enpoints scopes this client will need
+            // the api endpoints scopes this client will need
             .setScopes(arrayOf("Input", "scopes", "here"))
             // to manage tokens info in memory
             .setStorageManager(SharedPrefsStorageManager(this))
-            // if you set this flag to 'true' it will add to the OkHttp Client a listener to log the 
+            // if you set this flag to 'true' it will add to the OkHttp Client a listener to log the
             // Request and Response object, to make it easy to debug.
             .setLogging(true)
             .build()
@@ -55,13 +55,13 @@ val browser = WebView(context)
 
 browser.webViewClient = object : WebViewClient() {
   override fun onPageStarted(view: WebView, url: String, favicon: Bitmap?) {
-  
+
     if (authClient.isRedirectedUrl(url)) {
       browser.stopLoading()
-      
+
         // We will retrieve the bearer on the background thread.
         doAsync(doWork = {
-        
+
           // This is the tokenBearer object, that will manage your token. Done.
           val bearer = authClient.getTokenBearer(url)
         })
@@ -74,7 +74,7 @@ browser.webViewClient = object : WebViewClient() {
 
 
 
-### Userless Flow 
+### Userless Flow
 ##### For navigating without a user context.
 
 1) Register your application at: https://www.reddit.com/prefs/apps
@@ -83,14 +83,14 @@ browser.webViewClient = object : WebViewClient() {
 
 ```kotlin
 val authClient = RedditAuth.Builder()
-                    // specify the credentials you can find on your reddit app console, 
+                    // specify the credentials you can find on your reddit app console,
                     // in this case only the client id is provided.
                     .setUserlessCredentials(creds.clientId)
-                    // the api enpoints scopes this client will need
+                    // the api endpoints scopes this client will need
                     .setScopes(creds.scopes.toTypedArray())
                     // to manage tokens info in memory
                     .setStorageManager(SharedPrefsStorageManager(this))
-                    // if you set this flag to 'true' it will add to the OkHttp Client a listener to log the 
+                    // if you set this flag to 'true' it will add to the OkHttp Client a listener to log the
                     // Request and Response object, to make it easy to debug.
                     .setLogging(true)
                     .build()
@@ -119,11 +119,11 @@ val authClient = RedditAuth.Builder()
                 // specify the credentials you can find on your reddit app console
                 // for script / web apps you will be given a client id and a client secret
                 .setCredentials(creds.username, creds.password, creds.scriptClientId, creds.scriptClientSecret)
-                // the api enpoints scopes this client will need
+                // the api endpoints scopes this client will need
                 .setScopes(creds.scopes.toTypedArray())
                 // to manage tokens info in memory
                 .setStorageManager(SharedPrefsStorageManager(this))
-                // if you set this flag to 'true' it will add to the OkHttp Client a listener to log the 
+                // if you set this flag to 'true' it will add to the OkHttp Client a listener to log the
                 // Request and Response object, to make it easy to debug.
                 .setLogging(true)
                 .build()
