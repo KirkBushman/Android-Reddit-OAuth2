@@ -1,6 +1,5 @@
 language: android
-jdk: oraclejdk8
-dist: trusty
+jdk: openjdk11
 
 android:
   components:
@@ -26,3 +25,4 @@ before_script:
 
 script:
   - ./gradlew clean build
+  - ./gradlew test

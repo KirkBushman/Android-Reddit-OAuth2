@@ -29,6 +29,13 @@ android {
         }
     }
 
+    sourceSets {
+        main.java.srcDirs += 'src/main/java'
+        main.resources.srcDirs += 'src/main/res'
+        test.java.srcDirs += 'src/test/java'
+        test.resources.srcDirs += 'src/test/res'
+    }
+
     packagingOptions {
         exclude 'META-INF/atomicfu.kotlin_module'
     }
