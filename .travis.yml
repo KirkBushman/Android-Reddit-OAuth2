@@ -1,5 +1,8 @@
 language: android
-jdk: openjdk11
+jdk: openjdk8
+
+os: linux
+dist: xenial
 
 android:
   components:
