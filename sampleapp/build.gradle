@@ -16,8 +16,8 @@ android {
 
         minSdkVersion minSdkVer
         targetSdkVersion compileSdkVer
-        versionCode 1
-        versionName "1.0"
+        versionCode = VERSION_CODE
+        versionName = VERSION_NAME
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }

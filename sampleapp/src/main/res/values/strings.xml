@@ -8,12 +8,5 @@
     <string name="bttn_userless">Userless App Auth.</string>
     <string name="bttn_script">Script Only Auth.</string>
     <string name="bttn_token_info">Token Info</string>
-    <string name="bttn_token_edit">Token Edit</string>
-    <string name="bttn_submit">Submit</string>
-
-    <string name="edit_access_token">Access Token</string>
-    <string name="edit_refresh_token">Refresh Token</string>
-    <string name="edit_expires_in">Expires In</string>
-    <string name="edit_created_at">Created At</string>
 
 </resources>
