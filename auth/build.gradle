@@ -47,11 +47,9 @@ detekt {
 }
 
 dependencies {
-    implementation fileTree(dir: 'libs', include: ['*.jar'])
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_ver"
 
     implementation "androidx.core:core-ktx:$ax_core_ver"
-
-    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_ver"
 
     implementation "com.squareup.okhttp3:okhttp:$okhttp_ver"
     implementation "com.squareup.okhttp3:logging-interceptor:$okhttp_ver"

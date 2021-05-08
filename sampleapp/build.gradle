@@ -16,8 +16,8 @@ android {
 
         minSdkVersion minSdkVer
         targetSdkVersion compileSdkVer
-        versionCode 1
-        versionName "1.0"
+        versionCode = VERSION_CODE
+        versionName = VERSION_NAME
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -74,23 +74,21 @@ detekt {
 }
 
 dependencies {
-    implementation fileTree(dir: 'libs', include: ['*.jar'])
+    implementation project(':auth')
 
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_ver"
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:$coroutines_ver"
 
-    implementation project(':auth')
-
     implementation "com.google.dagger:hilt-android:$hilt_ver"
-    implementation "androidx.hilt:hilt-lifecycle-viewmodel:$ax_hilt_ver"
+    implementation "androidx.hilt:hilt-lifecycle-viewmodel:$ax_hilt_vm_ver"
     kapt "androidx.hilt:hilt-compiler:$ax_hilt_ver"
     kapt "com.google.dagger:hilt-android-compiler:$hilt_ver"
 
     implementation "com.squareup.retrofit2:retrofit:$retrofit_ver"
 
     implementation "com.google.android.material:material:$mdc_ver"
-    implementation "androidx.core:core-ktx:$ax_core_ver"
 
+    implementation "androidx.core:core-ktx:$ax_core_ver"
     implementation "androidx.appcompat:appcompat:$ax_appcompat_ver"
     implementation "androidx.browser:browser:$ax_browser_ver"
 
