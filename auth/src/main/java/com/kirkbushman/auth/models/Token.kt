@@ -74,16 +74,4 @@ data class Token(
         val currentTimestamp = System.currentTimeMillis() / MILLIS
         return (currentTimestamp + FIVE_MINS) >= expirationTime
     }
-
-    fun generateNewFrom(oldToken: Token): Token {
-
-        return Token(
-            accessToken = oldToken.accessToken,
-            refreshToken = this.refreshToken,
-            tokenType = oldToken.tokenType,
-            expiresInSecs = oldToken.expiresInSecs,
-            createdTime = oldToken.createdTime,
-            scopes = oldToken.scopes
-        )
-    }
 }

@@ -73,11 +73,8 @@ abstract class TokenBearer(
             val newToken = renewToken(token)
             if (newToken != null) {
 
-                // add back refresh toke if there is one
-                val newToken2 = token.generateNewFrom(newToken)
-
                 // and save it the store for the future
-                storManager.saveToken(newToken2, storManager.authType())
+                storManager.saveToken(newToken, storManager.authType())
 
                 return
             }
