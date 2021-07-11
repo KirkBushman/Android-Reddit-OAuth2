@@ -12,7 +12,7 @@ buildscript {
         compileSdkVer = 30
 
         kotlin_ver = '1.5.0'
-        coroutines_ver = '1.4.3'
+        coroutines_ver = '1.5.1'
 
         hilt_ver = "2.35.1"
         ax_hilt_ver = "1.0.0"
