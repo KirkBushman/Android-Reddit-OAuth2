@@ -35,7 +35,7 @@ buildscript {
         arch_core_ver = '2.1.0'
 
         ktlint_ver = '0.40.0'
-        detekt_ver = '1.17.0-RC2'
+        detekt_ver = '1.18.0'
 
         leakcanary_ver = '2.7'
     }
