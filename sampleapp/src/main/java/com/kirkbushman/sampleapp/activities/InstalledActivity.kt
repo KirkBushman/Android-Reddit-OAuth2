@@ -42,7 +42,8 @@ class InstalledActivity : AppCompatActivity() {
             binding.browser.webViewClient = object : WebViewClient() {
                 override fun onPageStarted(view: WebView, url: String, favicon: Bitmap?) {
 
-                    if (appAuth.isRedirectedUrl(url)) {
+                    val isRedirected = appAuth.isRedirectedUrl(url)
+                    if (isRedirected) {
                         binding.browser.stopLoading()
 
                         DoAsync(
