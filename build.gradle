@@ -3,7 +3,7 @@
 buildscript {
 
     ext {
-        android_gradle_ver = '7.0.0'
+        android_gradle_ver = '7.0.1'
 
         compileSdkVer = 31
         buildToolsVer = '31.0.0'
