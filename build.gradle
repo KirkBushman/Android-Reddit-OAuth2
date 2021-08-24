@@ -11,7 +11,7 @@ buildscript {
         minSdkVer = 19
         compileSdkVer = 31
 
-        kotlin_ver = '1.5.21'
+        kotlin_ver = '1.5.30'
         coroutines_ver = '1.5.1'
 
         hilt_ver = "2.38.1"
