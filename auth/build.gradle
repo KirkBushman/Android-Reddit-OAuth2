@@ -25,7 +25,6 @@ android {
 
     kotlinOptions {
         jvmTarget = '11'
-        noReflect = true
     }
 }
 
@@ -58,6 +57,7 @@ project.afterEvaluate {
 }
 
 dependencies {
+
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_ver"
 
     implementation "androidx.core:core-ktx:$ax_core_ver"

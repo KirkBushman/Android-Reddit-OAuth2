@@ -47,7 +47,6 @@ android {
 
     kotlinOptions {
         jvmTarget = '11'
-        noReflect = true
     }
 
     testOptions {
