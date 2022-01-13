@@ -18,7 +18,7 @@ buildscript {
         ax_hilt_ver = "1.0.0"
 
         ax_core_ver = '1.7.0'
-        ax_appcompat_ver = '1.4.0'
+        ax_appcompat_ver = '1.4.1'
         ax_browser_ver = '1.4.0'
 
         mdc_ver = '1.4.0'
