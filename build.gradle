@@ -21,7 +21,7 @@ buildscript {
         ax_appcompat_ver = '1.4.0'
         ax_browser_ver = '1.4.0'
 
-        mdc_ver = '1.4.0'
+        mdc_ver = '1.6.0'
 
         retrofit_ver = '2.9.0'
         moshi_ver = '1.13.0'
